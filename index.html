@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PDF417 Label Generator - Batch CSV to Printable Labels</title>
+  <meta name="description" content="Generate printable PDF417 labels from text or CSV data. Preview scan-safe labels, download PNG, and print label sheets locally in your browser.">
+  <meta name="robots" content="index,follow">
+  <meta property="og:title" content="PDF417 Label Generator - Batch CSV to Printable Labels">
+  <meta property="og:description" content="Create printable PDF417 labels from text or CSV data with local browser generation, label preview, and PNG or print output.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
+  <link rel="canonical" href="/pdf417-label-generator">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "PDF417 Label Generator",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Any",
+      "description": "Generate printable PDF417 labels from text or CSV data locally in the browser.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "PDF417 barcode generation",
+        "Batch one-value-per-line input",
+        "CSV first-column batch input",
+        "Printable label sheet preview",
+        "Scan-safe presets",
+        "PNG download",
+        "Local browser processing"
+      ]
+    }
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is a PDF417 label generator?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A PDF417 label generator creates stacked 2D PDF417 barcodes that can be printed on shipping, inventory, ticket, or document labels."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I generate PDF417 labels from CSV data?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Paste one value per line or paste CSV rows; this MVP uses the first CSV column to create a batch of PDF417 labels."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my barcode data uploaded?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. The barcode rendering runs locally in the browser for this tool, so internal IDs, inventory codes, and document numbers are not sent to a server."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does my PDF417 barcode not scan?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Common causes are too much data, a barcode printed too small, low quiet-zone margin, or an error correction level that is too low for the printing environment."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "When should I use PDF417 instead of Code 128 or QR codes?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Use PDF417 when you need a printable 2D barcode for labels, documents, tickets, or inventory records that must store more data than a linear barcode while remaining scanner friendly."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What PDF417 settings matter for printing?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The most important settings are barcode size, quiet-zone padding, row and column layout, and error correction level. Higher error correction improves durability but makes the symbol larger."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I print a sheet of PDF417 labels?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Generate multiple values in batch mode, preview the label sheet, then use the print button to print the generated PDF417 labels."
+          }
+        }
+      ]
+    }
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Barcode Generator",
+          "item": "/barcode-generator"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "PDF417 Label Generator",
+          "item": "/pdf417-label-generator"
+        }
+      ]
+    }
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f5ef;
+      --panel: #ffffff;
+      --ink: #1d2528;
+      --muted: #5d696e;
+      --line: #d9d2c5;
+      --accent: #0e7c7b;
+      --accent-dark: #0a5f60;
+      --warn: #a84427;
+      --ok: #2c6f43;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font: 15px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: minmax(320px, 420px) 1fr;
+      min-height: 100vh;
+    }
+
+    .controls {
+      border-right: 1px solid var(--line);
+      background: var(--panel);
+      padding: 22px;
+      overflow: auto;
+    }
+
+    .workspace {
+      padding: 22px;
+      overflow: auto;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+
+    .subhead {
+      margin: 0 0 20px;
+      color: var(--muted);
+    }
+
+    .section {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 650;
+    }
+
+    textarea,
+    input,
+    select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      padding: 10px 11px;
+    }
+
+    textarea {
+      min-height: 156px;
+      resize: vertical;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .hint,
+    .status {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .status {
+      min-height: 20px;
+      margin-top: 10px;
+    }
+
+    .status.ok {
+      color: var(--ok);
+    }
+
+    .status.warn {
+      color: var(--warn);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    button {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      padding: 9px 13px;
+      cursor: pointer;
+    }
+
+    button.primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    button.primary:hover {
+      background: var(--accent-dark);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .55;
+    }
+
+    .preview-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .preview-head h2 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    .label-sheet {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+      align-items: start;
+    }
+
+    .label {
+      min-height: 156px;
+      border: 1px dashed #bdb5a6;
+      border-radius: 6px;
+      background: #fff;
+      padding: 14px;
+      display: grid;
+      align-content: center;
+      gap: 10px;
+      break-inside: avoid;
+    }
+
+    .label canvas {
+      width: 100%;
+      max-height: 92px;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+
+    .payload {
+      min-height: 18px;
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .empty {
+      min-height: 360px;
+      display: grid;
+      place-items: center;
+      border: 1px dashed var(--line);
+      color: var(--muted);
+      text-align: center;
+      padding: 24px;
+    }
+
+    .value-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 18px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .value-line li {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 9px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .seo-copy {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      max-width: 920px;
+    }
+
+    .seo-copy h2 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    .seo-copy h3 {
+      margin: 18px 0 8px;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+
+    .seo-copy p,
+    .seo-copy li {
+      color: var(--muted);
+    }
+
+    .seo-copy a {
+      color: var(--accent-dark);
+    }
+
+    .seo-copy details {
+      border-top: 1px solid var(--line);
+      padding: 11px 0;
+    }
+
+    .seo-copy summary {
+      cursor: pointer;
+      font-weight: 650;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin: 14px 0 4px;
+    }
+
+    .info-grid h3 {
+      margin-top: 0;
+    }
+
+    .mini-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    .mini-table th,
+    .mini-table td {
+      border-top: 1px solid var(--line);
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .mini-table th {
+      color: var(--ink);
+    }
+
+    @media (max-width: 820px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .controls,
+      .preview-head {
+        display: none;
+      }
+
+      .app {
+        display: block;
+      }
+
+      .workspace {
+        padding: 0;
+      }
+
+      .label-sheet {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0;
+      }
+
+      .label {
+        border: 1px solid #ddd;
+        border-radius: 0;
+        min-height: 1.35in;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <aside class="controls">
+      <h1>PDF417 Label Generator</h1>
+      <p class="subhead">Batch CSV data into printable, scan-safe PDF417 labels. Generate locally in your browser.</p>
+      <ul class="value-line" aria-label="Key benefits">
+        <li>Batch input</li>
+        <li>Printable labels</li>
+        <li>Local processing</li>
+      </ul>
+
+      <label for="payload">Data</label>
+      <textarea id="payload" spellcheck="false">SHIP-2026-0001
+INV-AX9-4821
+DOC-LOCAL-DEMO</textarea>
+      <p class="hint">Single value or batch mode: one value per line. CSV paste uses the first column.</p>
+
+      <div class="section">
+        <label for="preset">Preset</label>
+        <select id="preset">
+          <option value="shipping">Shipping / inventory label</option>
+          <option value="document">Document ID</option>
+          <option value="ticket">Ticket / pass</option>
+          <option value="custom">Custom</option>
+        </select>
+      </div>
+
+      <div class="section grid">
+        <div>
+          <label for="scale">Scale</label>
+          <input id="scale" type="number" min="1" max="8" value="3">
+        </div>
+        <div>
+          <label for="eclevel">Error level</label>
+          <select id="eclevel">
+            <option value="auto">Auto</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+          </select>
+        </div>
+        <div>
+          <label for="columns">Columns</label>
+          <input id="columns" type="number" min="0" max="30" value="0">
+        </div>
+        <div>
+          <label for="rows">Rows</label>
+          <input id="rows" type="number" min="0" max="90" value="0">
+        </div>
+      </div>
+      <p class="hint">Use 0 for auto rows/columns. Higher error level makes larger but more durable codes.</p>
+
+      <div class="actions">
+        <button class="primary" id="generate" type="button">Generate</button>
+        <button id="download" type="button" disabled>Download first PNG</button>
+        <button id="print" type="button" disabled>Print labels</button>
+      </div>
+      <p class="status" id="status"></p>
+
+      <div class="section">
+        <p class="hint">Privacy-first: data stays in this browser. The barcode library is loaded from CDN for this local MVP.</p>
+      </div>
+    </aside>
+
+    <section class="workspace">
+      <div class="preview-head">
+        <div>
+          <h2>Preview</h2>
+          <div class="hint" id="count">No labels yet</div>
+        </div>
+      </div>
+      <div id="sheet" class="empty">Generate a PDF417 label to preview it here.</div>
+
+      <section class="seo-copy" aria-label="PDF417 label generator information">
+        <h2>Batch PDF417 Label Generator for Printable Barcode Sheets</h2>
+        <p>
+          This PDF417 label generator is built for turning text, inventory IDs, document numbers,
+          ticket codes, or CSV rows into printable PDF417 barcode labels. It focuses on label output,
+          batch workflow, and local browser processing rather than a single generic barcode image.
+        </p>
+
+        <div class="info-grid">
+          <div>
+            <h3>Common PDF417 label uses</h3>
+            <ul>
+              <li>Shipping and warehouse labels with internal reference IDs.</li>
+              <li>Inventory tags that need more data than a linear barcode can hold.</li>
+              <li>Document tracking labels for files, forms, and records.</li>
+              <li>Ticket, pass, and access labels that need scan-friendly 2D codes.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Why this is different</h3>
+            <ul>
+              <li>Batch-first input for one value per line or first-column CSV data.</li>
+              <li>Printable label preview instead of only one standalone image.</li>
+              <li>Presets for shipping, inventory, documents, and tickets.</li>
+              <li>Privacy-first local rendering for internal codes and IDs.</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Batch CSV to PDF417 labels</h3>
+        <p>
+          Paste a list of values or CSV rows into the data box. The generator reads the first
+          column of each row, creates one PDF417 label for each value, and lays the labels out
+          for printing. This is useful when you already have item IDs, order numbers, asset tags,
+          or document numbers in a spreadsheet.
+        </p>
+
+        <h3>Example PDF417 label data</h3>
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>Use case</th>
+              <th>Example value</th>
+              <th>Good fit because</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Shipping label</td>
+              <td>SHIP-2026-0001</td>
+              <td>Short tracking or order references stay readable and easy to scan.</td>
+            </tr>
+            <tr>
+              <td>Inventory tag</td>
+              <td>INV-AX9-4821</td>
+              <td>Batch IDs can be pasted from a spreadsheet and printed as labels.</td>
+            </tr>
+            <tr>
+              <td>Document label</td>
+              <td>DOC-LOCAL-DEMO</td>
+              <td>Internal document numbers can be encoded locally without uploading data.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>PDF417 print settings that affect scan quality</h3>
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>Setting</th>
+              <th>What it changes</th>
+              <th>When to adjust</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Scale</td>
+              <td>Controls the rendered module size of the barcode.</td>
+              <td>Increase it when printed labels are too small to scan reliably.</td>
+            </tr>
+            <tr>
+              <td>Error level</td>
+              <td>Adds correction data so damaged or low-quality prints can still scan.</td>
+              <td>Use a higher level for warehouse, shipping, or rough handling.</td>
+            </tr>
+            <tr>
+              <td>Rows / columns</td>
+              <td>Changes the shape of the stacked PDF417 symbol.</td>
+              <td>Leave auto unless your label size requires a wider or taller code.</td>
+            </tr>
+            <tr>
+              <td>Quiet zone</td>
+              <td>Keeps white space around the barcode for scanners.</td>
+              <td>Do not crop tight around the barcode when placing it on a label.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>PDF417 vs QR code, Code 128, and Data Matrix</h3>
+        <p>
+          PDF417 is a stacked 2D barcode often used on labels, forms, IDs, shipping workflows,
+          and transport documents. Use Code 128 for compact linear inventory labels, QR codes
+          for mobile-friendly URLs or general text, and Data Matrix when you need a very compact
+          2D code on small parts or packaging. PDF417 is a good fit when printable label workflows
+          matter and you need more data capacity than a linear barcode.
+        </p>
+
+        <h3>Scan-safe checklist before printing</h3>
+        <ul>
+          <li>Print one sample label and scan it before generating a large batch.</li>
+          <li>Keep enough white margin around every PDF417 code.</li>
+          <li>Use short stable IDs when possible instead of very long raw JSON or text.</li>
+          <li>Increase scale or error correction when labels are small or may be damaged.</li>
+          <li>Use dark ink on a light background for the most reliable scans.</li>
+        </ul>
+
+        <h3>Related barcode tools</h3>
+        <p>
+          Build a complete barcode workflow with a
+          <a href="/barcode-generator">barcode generator</a>,
+          <a href="/code-128-barcode-generator">Code 128 generator</a>,
+          <a href="/ean-13-barcode-generator">EAN-13 generator</a>, and
+          <a href="/qr-code-generator">QR code generator</a>.
+        </p>
+
+        <h3>FAQ</h3>
+        <details>
+          <summary>What is a PDF417 label generator?</summary>
+          <p>A PDF417 label generator creates stacked 2D PDF417 barcodes that can be printed on shipping, inventory, ticket, or document labels.</p>
+        </details>
+        <details>
+          <summary>Can I generate PDF417 labels from CSV data?</summary>
+          <p>Yes. Paste one value per line or paste CSV rows; this MVP uses the first CSV column to create a batch of PDF417 labels.</p>
+        </details>
+        <details>
+          <summary>Is my barcode data uploaded?</summary>
+          <p>No. The barcode rendering runs locally in the browser, so internal IDs, inventory codes, and document numbers are not sent to a server.</p>
+        </details>
+        <details>
+          <summary>Why does my PDF417 barcode not scan?</summary>
+          <p>Common causes are too much data, a barcode printed too small, low quiet-zone margin, or an error correction level that is too low for the printing environment.</p>
+        </details>
+        <details>
+          <summary>When should I use PDF417 instead of Code 128 or QR codes?</summary>
+          <p>Use PDF417 when you need a printable 2D barcode for labels, documents, tickets, or inventory records that must store more data than a linear barcode while remaining scanner friendly.</p>
+        </details>
+        <details>
+          <summary>What PDF417 settings matter for printing?</summary>
+          <p>The most important settings are barcode size, quiet-zone padding, row and column layout, and error correction level. Higher error correction improves durability but makes the symbol larger.</p>
+        </details>
+        <details>
+          <summary>Can I print a sheet of PDF417 labels?</summary>
+          <p>Yes. Generate multiple values in batch mode, preview the label sheet, then use the print button to print the generated PDF417 labels.</p>
+        </details>
+      </section>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bwip-js@4.5.1/dist/bwip-js-min.js"></script>
+  <script>
+    const els = {
+      payload: document.querySelector('#payload'),
+      preset: document.querySelector('#preset'),
+      scale: document.querySelector('#scale'),
+      eclevel: document.querySelector('#eclevel'),
+      columns: document.querySelector('#columns'),
+      rows: document.querySelector('#rows'),
+      generate: document.querySelector('#generate'),
+      download: document.querySelector('#download'),
+      print: document.querySelector('#print'),
+      status: document.querySelector('#status'),
+      sheet: document.querySelector('#sheet'),
+      count: document.querySelector('#count'),
+    };
+
+    const presets = {
+      shipping: { scale: 3, eclevel: '3', columns: 6, rows: 0 },
+      document: { scale: 3, eclevel: '2', columns: 5, rows: 0 },
+      ticket: { scale: 3, eclevel: '2', columns: 4, rows: 0 },
+    };
+
+    let firstCanvas = null;
+
+    function csvFirstCell(line) {
+      const trimmed = line.trim();
+      if (!trimmed) return '';
+      if (!trimmed.startsWith('"')) return trimmed.split(',')[0].trim();
+      let out = '';
+      for (let i = 1; i < trimmed.length; i += 1) {
+        if (trimmed[i] === '"' && trimmed[i + 1] === '"') {
+          out += '"';
+          i += 1;
+        } else if (trimmed[i] === '"') {
+          break;
+        } else {
+          out += trimmed[i];
+        }
+      }
+      return out.trim();
+    }
+
+    function getValues() {
+      return els.payload.value
+        .split(/\r?\n/)
+        .map(csvFirstCell)
+        .filter(Boolean)
+        .slice(0, 100);
+    }
+
+    function optionsFor(text) {
+      const opts = {
+        bcid: 'pdf417',
+        text,
+        scale: Number(els.scale.value) || 3,
+        paddingwidth: 8,
+        paddingheight: 8,
+        backgroundcolor: 'FFFFFF',
+      };
+      if (els.eclevel.value !== 'auto') opts.eclevel = Number(els.eclevel.value);
+      const cols = Number(els.columns.value);
+      const rows = Number(els.rows.value);
+      if (cols > 0) opts.columns = cols;
+      if (rows > 0) opts.rows = rows;
+      return opts;
+    }
+
+    function setStatus(text, kind) {
+      els.status.textContent = text;
+      els.status.className = `status ${kind || ''}`;
+    }
+
+    function validate(values) {
+      if (!values.length) return 'Add at least one value.';
+      const tooLong = values.find((v) => v.length > 900);
+      if (tooLong) return 'One value is very long. Keep MVP labels under 900 characters.';
+      return '';
+    }
+
+    function render() {
+      if (!window.bwipjs) {
+        setStatus('Barcode library did not load. Check the network and refresh.', 'warn');
+        return;
+      }
+
+      const values = getValues();
+      const problem = validate(values);
+      if (problem) {
+        setStatus(problem, 'warn');
+        return;
+      }
+
+      els.sheet.className = 'label-sheet';
+      els.sheet.innerHTML = '';
+      firstCanvas = null;
+
+      for (const value of values) {
+        const label = document.createElement('div');
+        label.className = 'label';
+
+        const canvas = document.createElement('canvas');
+        const payload = document.createElement('div');
+        payload.className = 'payload';
+        payload.textContent = value;
+
+        try {
+          bwipjs.toCanvas(canvas, optionsFor(value));
+          firstCanvas ||= canvas;
+          label.append(canvas, payload);
+          els.sheet.append(label);
+        } catch (err) {
+          setStatus(err.message || 'Could not generate this barcode.', 'warn');
+          return;
+        }
+      }
+
+      els.download.disabled = !firstCanvas;
+      els.print.disabled = !firstCanvas;
+      els.count.textContent = `${values.length} label${values.length === 1 ? '' : 's'}`;
+      setStatus('Generated locally. Print one test label before a large batch.', 'ok');
+    }
+
+    function applyPreset() {
+      const preset = presets[els.preset.value];
+      if (!preset) return;
+      els.scale.value = preset.scale;
+      els.eclevel.value = preset.eclevel;
+      els.columns.value = preset.columns;
+      els.rows.value = preset.rows;
+    }
+
+    function downloadPng() {
+      if (!firstCanvas) return;
+      const a = document.createElement('a');
+      a.href = firstCanvas.toDataURL('image/png');
+      a.download = 'pdf417-barcode.png';
+      a.click();
+    }
+
+    els.generate.addEventListener('click', render);
+    els.download.addEventListener('click', downloadPng);
+    els.print.addEventListener('click', () => window.print());
+    els.preset.addEventListener('change', () => {
+      applyPreset();
+      render();
+    });
+
+    applyPreset();
+    render();
+  </script>
+</body>
+</html>
