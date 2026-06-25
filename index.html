@@ -3,7 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PDF417 Label Generator - Batch CSV to Printable Labels</title>
+  <title>Free Online PDF417 Barcode Label Generator - Batch CSV Labels</title>
+  <script>
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+      window['ga-disable-G-CTNLF8TLJ4'] = true;
+    }
+    if (location.hostname === 'batchbarcode.com') {
+      location.replace(`https://www.batchbarcode.com${location.pathname}${location.search}${location.hash}`);
+    }
+  </script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTNLF8TLJ4"></script>
   <script>
@@ -13,10 +21,10 @@
 
     gtag('config', 'G-CTNLF8TLJ4');
   </script>
-  <meta name="description" content="Generate printable PDF417 labels from text or CSV data. Preview scan-safe labels, download PNG, and print label sheets locally in your browser.">
+  <meta name="description" content="Free online PDF417 barcode label generator for text or CSV data. Preview scan-safe labels, download PNG, and print barcode sheets locally in your browser.">
   <meta name="robots" content="index,follow">
-  <meta property="og:title" content="PDF417 Label Generator - Batch CSV to Printable Labels">
-  <meta property="og:description" content="Create printable PDF417 labels from text or CSV data with local browser generation, label preview, and PNG or print output.">
+  <meta property="og:title" content="Free Online PDF417 Barcode Label Generator">
+  <meta property="og:description" content="Create printable PDF417 barcode labels from text or CSV data with local browser generation, label preview, and PNG or print output.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.batchbarcode.com/">
   <meta name="twitter:card" content="summary">
@@ -25,11 +33,11 @@
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
-      "name": "PDF417 Label Generator",
+      "name": "Free Online PDF417 Barcode Label Generator",
       "url": "https://www.batchbarcode.com/",
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Any",
-      "description": "Generate printable PDF417 labels from text or CSV data locally in the browser.",
+      "description": "Generate free online printable PDF417 barcode labels from text or CSV data locally in the browser.",
       "offers": {
         "@type": "Offer",
         "price": "0",
@@ -459,8 +467,8 @@
 <body>
   <main class="app">
     <aside class="controls">
-      <h1>PDF417 Label Generator</h1>
-      <p class="subhead">Batch CSV data into printable, scan-safe PDF417 labels. Generate locally in your browser.</p>
+      <h1>Free Online PDF417 Barcode Generator</h1>
+      <p class="subhead">Batch CSV data into printable, scan-safe PDF417 barcode labels. Generate locally in your browser.</p>
       <ul class="value-line" aria-label="Key benefits">
         <li>Batch input</li>
         <li>Printable labels</li>
@@ -536,9 +544,9 @@ DOC-LOCAL-DEMO</textarea>
       <div id="sheet" class="empty">Generate a PDF417 label to preview it here.</div>
 
       <section class="seo-copy" aria-label="PDF417 label generator information">
-        <h2>Batch PDF417 Label Generator for Printable Barcode Sheets</h2>
+        <h2>Free Online PDF417 Label Generator for Printable Barcode Sheets</h2>
         <p>
-          This PDF417 label generator is built for turning text, inventory IDs, document numbers,
+          This free online PDF417 barcode generator is built for turning text, inventory IDs, document numbers,
           ticket codes, or CSV rows into printable PDF417 barcode labels. It focuses on label output,
           batch workflow, and local browser processing rather than a single generic barcode image.
         </p>
@@ -654,10 +662,10 @@ DOC-LOCAL-DEMO</textarea>
         <h3>Related barcode tools</h3>
         <p>
           Build a complete barcode workflow with a
-          <a href="/barcode-generator">barcode generator</a>,
-          <a href="/code-128-barcode-generator">Code 128 generator</a>,
-          <a href="/ean-13-barcode-generator">EAN-13 generator</a>, and
-          <a href="/qr-code-generator">QR code generator</a>.
+          <a href="/barcode-generator/">barcode generator</a>,
+          <a href="/code-128-barcode-generator/">Code 128 generator</a>,
+          <a href="/ean-13-barcode-generator/">EAN-13 generator</a>, and
+          <a href="/qr-code-generator/">QR code generator</a>.
         </p>
 
         <h3>FAQ</h3>
@@ -766,6 +774,10 @@ DOC-LOCAL-DEMO</textarea>
       els.status.className = `status ${kind || ''}`;
     }
 
+    function trackEvent(name, params = {}) {
+      if (typeof gtag === 'function') gtag('event', name, params);
+    }
+
     function validate(values) {
       if (!values.length) return 'Add at least one value.';
       const tooLong = values.find((v) => v.length > 900);
@@ -773,7 +785,7 @@ DOC-LOCAL-DEMO</textarea>
       return '';
     }
 
-    function render() {
+    function render(track = false) {
       if (!window.bwipjs) {
         setStatus('Barcode library did not load. Check the network and refresh.', 'warn');
         return;
@@ -814,6 +826,13 @@ DOC-LOCAL-DEMO</textarea>
       els.print.disabled = !firstCanvas;
       els.count.textContent = `${values.length} label${values.length === 1 ? '' : 's'}`;
       setStatus('Generated locally. Print one test label before a large batch.', 'ok');
+      if (track) {
+        trackEvent('generate_barcode', {
+          barcode_type: 'pdf417',
+          label_count: values.length,
+          page_type: 'pdf417_batch',
+        });
+      }
     }
 
     function applyPreset() {
@@ -827,15 +846,25 @@ DOC-LOCAL-DEMO</textarea>
 
     function downloadPng() {
       if (!firstCanvas) return;
+      trackEvent('download_barcode_png', {
+        barcode_type: 'pdf417',
+        page_type: 'pdf417_batch',
+      });
       const a = document.createElement('a');
       a.href = firstCanvas.toDataURL('image/png');
       a.download = 'pdf417-barcode.png';
       a.click();
     }
 
-    els.generate.addEventListener('click', render);
+    els.generate.addEventListener('click', () => render(true));
     els.download.addEventListener('click', downloadPng);
-    els.print.addEventListener('click', () => window.print());
+    els.print.addEventListener('click', () => {
+      trackEvent('print_barcode_labels', {
+        barcode_type: 'pdf417',
+        page_type: 'pdf417_batch',
+      });
+      window.print();
+    });
     els.preset.addEventListener('change', () => {
       applyPreset();
       render();

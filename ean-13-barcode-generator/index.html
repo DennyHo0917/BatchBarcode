@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Free Online EAN-13 Barcode Generator - Retail Barcode PNG</title>
+  <script>
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+      window['ga-disable-G-CTNLF8TLJ4'] = true;
+    }
+    if (location.hostname === 'batchbarcode.com') {
+      location.replace(`https://www.batchbarcode.com${location.pathname}${location.search}${location.hash}`);
+    }
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTNLF8TLJ4"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CTNLF8TLJ4');
+  </script>
+  <meta name="description" content="Free online EAN-13 barcode generator for 12 or 13 digit product codes. Create a retail-style barcode preview and download a PNG locally.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://www.batchbarcode.com/ean-13-barcode-generator/">
+  <link rel="stylesheet" href="/assets/barcode-tools.css">
+</head>
+<body data-bcid="ean13" data-page-type="ean13_generator">
+  <main class="app">
+    <aside class="controls">
+      <nav class="nav" aria-label="Barcode tools">
+        <a href="/">PDF417 labels</a>
+        <a href="/barcode-generator/">All barcodes</a>
+        <a href="/code-128-barcode-generator/">Code 128</a>
+        <a href="/qr-code-generator/">QR code</a>
+      </nav>
+      <h1>Free Online EAN-13 Barcode Generator</h1>
+      <p class="subhead">Generate a retail-style EAN-13 barcode from a 12 or 13 digit product code.</p>
+
+      <label for="barcodeData">EAN-13 digits</label>
+      <input id="barcodeData" inputmode="numeric" pattern="[0-9]*" value="5901234123457">
+      <p class="hint">Enter 12 digits to let the barcode library calculate the check digit, or 13 digits with the check digit included.</p>
+
+      <div class="section">
+        <label for="scale">Scale</label>
+        <input id="scale" type="number" min="1" max="8" value="3">
+      </div>
+
+      <div class="actions">
+        <button class="primary" id="generate" type="button">Generate</button>
+        <button id="download" type="button" disabled>Download PNG</button>
+        <button id="print" type="button" disabled>Print</button>
+      </div>
+      <p class="status" id="status"></p>
+      <p class="hint section">Generated locally. Use official GS1 numbers for real retail products.</p>
+    </aside>
+
+    <section class="workspace">
+      <div class="preview-head">
+        <h2>Preview</h2>
+        <p class="hint">Use this preview for testing and label mockups.</p>
+      </div>
+      <div id="preview" class="preview">EAN-13 preview will appear here.</div>
+
+      <section class="seo-copy">
+        <h2>EAN-13 Barcode for Product Codes</h2>
+        <p>
+          This free online EAN-13 barcode generator creates a retail-style barcode
+          image from a numeric product code. It is useful for mockups, internal tests,
+          sample packaging, and scanner checks.
+        </p>
+        <h3>EAN-13 input rules</h3>
+        <ul>
+          <li>Use only digits.</li>
+          <li>Enter 12 digits when you want the check digit calculated.</li>
+          <li>Enter 13 digits when you already know the full EAN-13 value.</li>
+        </ul>
+        <h3>Related tools</h3>
+        <ul class="link-list">
+          <li><a href="/barcode-generator/">Barcode generator</a></li>
+          <li><a href="/code-128-barcode-generator/">Code 128 generator</a></li>
+          <li><a href="/">PDF417 label generator</a></li>
+          <li><a href="/qr-code-generator/">QR code generator</a></li>
+        </ul>
+      </section>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bwip-js@4.5.1/dist/bwip-js-min.js"></script>
+  <script src="/assets/barcode-tools.js"></script>
+</body>
+</html>

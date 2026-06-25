@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Free Online QR Code Generator - Download PNG</title>
+  <script>
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+      window['ga-disable-G-CTNLF8TLJ4'] = true;
+    }
+    if (location.hostname === 'batchbarcode.com') {
+      location.replace(`https://www.batchbarcode.com${location.pathname}${location.search}${location.hash}`);
+    }
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTNLF8TLJ4"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CTNLF8TLJ4');
+  </script>
+  <meta name="description" content="Free online QR code generator for URLs, text, labels, and documents. Create a QR code locally, preview it, and download a PNG.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://www.batchbarcode.com/qr-code-generator/">
+  <link rel="stylesheet" href="/assets/barcode-tools.css">
+</head>
+<body data-bcid="qrcode" data-page-type="qr_code_generator">
+  <main class="app">
+    <aside class="controls">
+      <nav class="nav" aria-label="Barcode tools">
+        <a href="/">PDF417 labels</a>
+        <a href="/barcode-generator/">All barcodes</a>
+        <a href="/code-128-barcode-generator/">Code 128</a>
+        <a href="/ean-13-barcode-generator/">EAN-13</a>
+      </nav>
+      <h1>Free Online QR Code Generator</h1>
+      <p class="subhead">Generate a QR code for a URL, plain text, label, document, or test scan.</p>
+
+      <label for="barcodeData">QR code data</label>
+      <textarea id="barcodeData" spellcheck="false">https://www.batchbarcode.com/</textarea>
+      <p class="hint">Short URLs and short text usually scan faster and print cleaner.</p>
+
+      <div class="section">
+        <label for="scale">Scale</label>
+        <input id="scale" type="number" min="1" max="8" value="4">
+      </div>
+
+      <div class="actions">
+        <button class="primary" id="generate" type="button">Generate</button>
+        <button id="download" type="button" disabled>Download PNG</button>
+        <button id="print" type="button" disabled>Print</button>
+      </div>
+      <p class="status" id="status"></p>
+      <p class="hint section">Generated locally. Your QR code data stays in this browser.</p>
+    </aside>
+
+    <section class="workspace">
+      <div class="preview-head">
+        <h2>Preview</h2>
+        <p class="hint">Scan the preview before printing or sharing the PNG.</p>
+      </div>
+      <div id="preview" class="preview">QR code preview will appear here.</div>
+
+      <section class="seo-copy">
+        <h2>QR Code for URLs and Text</h2>
+        <p>
+          This free online QR code generator creates a local QR code preview for
+          URLs, text, document references, labels, and quick mobile scans. Download
+          the PNG when the preview looks right.
+        </p>
+        <h3>QR code tips</h3>
+        <ul>
+          <li>Use short URLs when possible for cleaner modules.</li>
+          <li>Keep enough white space around the QR code when printing.</li>
+          <li>Test the code on a phone before using it on labels or documents.</li>
+        </ul>
+        <h3>Related tools</h3>
+        <ul class="link-list">
+          <li><a href="/barcode-generator/">Barcode generator</a></li>
+          <li><a href="/code-128-barcode-generator/">Code 128 generator</a></li>
+          <li><a href="/ean-13-barcode-generator/">EAN-13 generator</a></li>
+          <li><a href="/">PDF417 label generator</a></li>
+        </ul>
+      </section>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bwip-js@4.5.1/dist/bwip-js-min.js"></script>
+  <script src="/assets/barcode-tools.js"></script>
+</body>
+</html>
