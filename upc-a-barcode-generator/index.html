@@ -27,7 +27,7 @@
   <meta property="og:url" content="https://www.batchbarcode.com/upc-a-barcode-generator/">
   <meta name="twitter:card" content="summary">
   <link rel="canonical" href="https://www.batchbarcode.com/upc-a-barcode-generator/">
-  <link rel="stylesheet" href="/assets/barcode-tools.css?v=20260811-10">
+  <link rel="stylesheet" href="/assets/barcode-tools.css?v=20260811-14">
 </head>
 <body data-bcid="upca" data-page-type="upca_generator">
   <header class="site-header">
@@ -41,12 +41,18 @@
       <a href="/data-matrix-barcode-generator/">Data Matrix</a>
       <a href="/ean-13-barcode-generator/">EAN-13</a>
       <a href="/upc-a-barcode-generator/" aria-current="page">UPC-A</a>
+      <a href="/barcode-faq/">Help &amp; FAQ</a>
     </nav>
   </header>
   <main class="app">
     <aside class="controls">
       <h1>Free UPC-A Barcode Generator</h1>
       <p class="subhead">Create a retail-style UPC-A barcode from an 11 or 12 digit product code.</p>
+
+      <nav class="generator-mode" aria-label="Generator mode">
+        <span aria-current="page">Single barcode</span>
+        <a href="?mode=batch">Batch &amp; A4 PDF</a>
+      </nav>
 
       <label for="barcodeData">UPC-A data</label>
       <textarea id="barcodeData" inputmode="numeric" spellcheck="false">012345678905</textarea>
@@ -111,6 +117,13 @@
           <li>Scan a printed sample before applying labels to a product run.</li>
         </ul>
 
+        <h3>UPC-A FAQ</h3>
+        <div class="faq-list">
+          <details><summary>Should I enter 11 or 12 digits for UPC-A?</summary><p>Enter 11 digits to calculate the final check digit, or all 12 digits when the supplied UPC-A number already has a valid check digit.</p></details>
+          <details><summary>Can I print multiple UPC-A product labels?</summary><p>Yes. Select Batch &amp; A4 PDF above, paste or import the product numbers, then export the validated label sheet.</p></details>
+          <details><summary>Can I invent a UPC-A number for a retail product?</summary><p>The generator only renders the number you provide. Retail identifiers should come from the organization or numbering authority responsible for your product codes.</p></details>
+        </div>
+        <p><a href="/barcode-faq/">More barcode and printing questions →</a></p>
         <h3>Related tools</h3>
         <ul class="link-list">
           <li><a href="/ean-13-barcode-generator/">EAN-13 generator</a></li>
@@ -123,6 +136,6 @@
   </main>
 
   <script src="/assets/vendor/bwip-js-min.js?v=4.5.1"></script>
-  <script src="/assets/barcode-tools.js?v=20260811-12"></script>
+  <script src="/assets/barcode-tools.js?v=20260811-15"></script>
 </body>
 </html>

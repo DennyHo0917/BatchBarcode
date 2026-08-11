@@ -27,7 +27,7 @@
   <meta property="og:url" content="https://www.batchbarcode.com/micro-pdf417-generator/">
   <meta name="twitter:card" content="summary">
   <link rel="canonical" href="https://www.batchbarcode.com/micro-pdf417-generator/">
-  <link rel="stylesheet" href="/assets/barcode-tools.css?v=20260811-10">
+  <link rel="stylesheet" href="/assets/barcode-tools.css?v=20260811-14">
 </head>
 <body data-bcid="micropdf417" data-page-type="micropdf417_generator">
   <header class="site-header">
@@ -41,12 +41,18 @@
       <a href="/data-matrix-barcode-generator/">Data Matrix</a>
       <a href="/ean-13-barcode-generator/">EAN-13</a>
       <a href="/upc-a-barcode-generator/">UPC-A</a>
+      <a href="/barcode-faq/">Help &amp; FAQ</a>
     </nav>
   </header>
   <main class="app">
     <aside class="controls">
       <h1>Free MicroPDF417 Barcode Generator</h1>
       <p class="subhead">Create a compact MicroPDF417 barcode in your browser and download it as a PNG.</p>
+
+      <nav class="generator-mode" aria-label="Generator mode">
+        <span aria-current="page">Single barcode</span>
+        <a href="?mode=batch">Batch &amp; A4 PDF</a>
+      </nav>
 
       <label for="barcodeData">Data</label>
       <textarea id="barcodeData" spellcheck="false">ITEM-2048</textarea>
@@ -104,6 +110,13 @@
           <li>Test the final printed label, not only the on-screen preview.</li>
         </ul>
 
+        <h3>MicroPDF417 FAQ</h3>
+        <div class="faq-list">
+          <details><summary>How is MicroPDF417 different from PDF417?</summary><p>MicroPDF417 is designed for smaller spaces but supports less data. Standard PDF417 is better when capacity and flexible symbol dimensions matter more than size.</p></details>
+          <details><summary>Can I batch-print MicroPDF417 labels?</summary><p>Yes. Select Batch &amp; A4 PDF above to create an A4 or Letter sheet from pasted rows, CSV or Excel.</p></details>
+          <details><summary>Why does a MicroPDF417 value fail to render?</summary><p>The value may exceed the capacity available for the compact symbol. Shorten the value or switch to standard PDF417 for more capacity.</p></details>
+        </div>
+        <p><a href="/barcode-faq/">More barcode and printing questions →</a></p>
         <h3>Related tools</h3>
         <ul class="link-list">
           <li><a href="/">PDF417 label generator</a></li>
@@ -116,6 +129,6 @@
   </main>
 
   <script src="/assets/vendor/bwip-js-min.js?v=4.5.1"></script>
-  <script src="/assets/barcode-tools.js?v=20260811-12"></script>
+  <script src="/assets/barcode-tools.js?v=20260811-15"></script>
 </body>
 </html>

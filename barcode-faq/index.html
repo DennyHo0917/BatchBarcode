@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barcode Generator FAQ: Batch, CSV, PDF &amp; Printing</title>
+  <script>
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') window['ga-disable-G-CTNLF8TLJ4'] = true;
+    if (location.hostname === 'batchbarcode.com') location.replace(`https://www.batchbarcode.com${location.pathname}${location.search}${location.hash}`);
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTNLF8TLJ4"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CTNLF8TLJ4');
+  </script>
+  <meta name="description" content="Answers about batch barcode generation, CSV and Excel import, A4 label PDFs, printing, scan failures, privacy, EAN-13, UPC-A, QR codes and PDF417.">
+  <meta name="robots" content="index,follow">
+  <meta property="og:title" content="BatchBarcode Help &amp; FAQ">
+  <meta property="og:description" content="Practical answers for creating, exporting, printing and scanning barcode labels.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.batchbarcode.com/barcode-faq/">
+  <meta name="twitter:card" content="summary">
+  <link rel="canonical" href="https://www.batchbarcode.com/barcode-faq/">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "BatchBarcode", "item": "https://www.batchbarcode.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Help and FAQ", "item": "https://www.batchbarcode.com/barcode-faq/" }
+      ]
+    }
+  </script>
+  <link rel="stylesheet" href="/assets/barcode-tools.css?v=20260811-14">
+</head>
+<body>
+  <header class="site-header">
+    <a class="site-brand" href="/">BatchBarcode</a>
+    <nav class="site-nav" aria-label="Barcode generators">
+      <a href="/barcode-generator/">All formats</a>
+      <a href="/">PDF417</a>
+      <a href="/micro-pdf417-generator/">MicroPDF417</a>
+      <a href="/code-128-barcode-generator/">Code 128</a>
+      <a href="/qr-code-generator/">QR code</a>
+      <a href="/data-matrix-barcode-generator/">Data Matrix</a>
+      <a href="/ean-13-barcode-generator/">EAN-13</a>
+      <a href="/upc-a-barcode-generator/">UPC-A</a>
+      <a href="/barcode-faq/" aria-current="page">Help &amp; FAQ</a>
+    </nav>
+  </header>
+
+  <main class="content-page">
+    <header class="content-hero">
+      <h1>Barcode Generator Help &amp; FAQ</h1>
+      <p>Practical answers for turning text, CSV or Excel rows into barcode images and printable A4 or Letter label sheets.</p>
+    </header>
+
+    <section class="faq-section" aria-labelledby="getting-started">
+      <h2 id="getting-started">Getting started</h2>
+      <div class="faq-list">
+        <details open>
+          <summary>Does BatchBarcode upload my barcode data?</summary>
+          <p>No. Barcode rendering, spreadsheet parsing and file export run locally in your browser. Barcode values, file names and mapped columns are not sent to BatchBarcode.</p>
+        </details>
+        <details>
+          <summary>Which barcode format should I choose?</summary>
+          <p>Use <a href="/code-128-barcode-generator/">Code 128</a> for compact internal IDs, <a href="/qr-code-generator/">QR codes</a> for URLs and phone scanning, <a href="/data-matrix-barcode-generator/">Data Matrix</a> for compact part labels, and <a href="/">PDF417</a> for printable codes that hold more text. EAN-13 and UPC-A are for retail product numbers.</p>
+        </details>
+        <details>
+          <summary>Can I generate more than one barcode at a time?</summary>
+          <p>Yes. Open Batch &amp; A4 PDF on any format page, enter one value per line, or import a CSV or Excel file. The current browser limit is 100 usable rows per batch.</p>
+        </details>
+        <details>
+          <summary>Why is the batch limited to 100 barcodes?</summary>
+          <p>The limit keeps rendering, previews and PDF creation responsive on ordinary devices. Split larger jobs into batches of 100; no extra rows are silently discarded.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="faq-section" aria-labelledby="files-output">
+      <h2 id="files-output">CSV, Excel and file output</h2>
+      <div class="faq-list">
+        <details>
+          <summary>What CSV and Excel files are supported?</summary>
+          <p>The batch tool accepts CSV and .xlsx files up to 5 MB. Excel import reads the first worksheet, then lets you map barcode value, label text and extra text columns.</p>
+        </details>
+        <details>
+          <summary>Can I create an A4 or Letter barcode-label PDF?</summary>
+          <p>Yes. Select Batch &amp; A4 PDF, choose A4 or Letter, adjust rows, columns, margins and gaps, then use Download PDF. The same layout is used for browser printing.</p>
+        </details>
+        <details>
+          <summary>Should I download PDF or PNG ZIP?</summary>
+          <p>Use PDF when you need a ready-to-print label sheet. Use PNG ZIP when another application, document or label workflow needs separate image files.</p>
+        </details>
+        <details>
+          <summary>Are my label-layout settings saved?</summary>
+          <p>Yes. The current A4 or Letter layout preferences are saved in this browser. They are not synchronized to another browser or device.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="faq-section" aria-labelledby="printing-scanning">
+      <h2 id="printing-scanning">Printing and scanning</h2>
+      <div class="faq-list">
+        <details>
+          <summary>Why does a barcode scan on screen but fail after printing?</summary>
+          <p>The printed code may be too small, blurred, clipped or surrounded by too little white space. Print at 100% scale, avoid fit-to-page, and test the final printer, paper and scanner.</p>
+        </details>
+        <details>
+          <summary>What is a barcode quiet zone?</summary>
+          <p>The quiet zone is the blank space around a barcode. A scanner uses it to separate the symbol from nearby text, borders and graphics, so do not crop it away.</p>
+        </details>
+        <details>
+          <summary>Should I use “Fit to page” when printing labels?</summary>
+          <p>No. Start with 100% or actual-size printing. Fit-to-page can resize bar widths and label spacing, causing poor scans or misalignment with label stock.</p>
+        </details>
+        <details>
+          <summary>How should I test a label before a production run?</summary>
+          <p>Print one page using the final printer and paper, then scan every label with the actual phone or scanner used in the workflow. Change only one setting at a time if a scan fails.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="faq-section" aria-labelledby="format-questions">
+      <h2 id="format-questions">Format-specific questions</h2>
+      <div class="faq-list">
+        <details>
+          <summary>Can BatchBarcode calculate an EAN-13 check digit?</summary>
+          <p>The EAN-13 generator accepts 12 digits and lets the barcode library calculate the final digit. If you enter all 13 digits, the existing check digit must be valid.</p>
+        </details>
+        <details>
+          <summary>Can BatchBarcode calculate a UPC-A check digit?</summary>
+          <p>The UPC-A generator accepts 11 digits and calculates the twelfth digit. A 12-digit value is accepted only when its check digit is valid.</p>
+        </details>
+        <details>
+          <summary>What is the difference between PDF417 and MicroPDF417?</summary>
+          <p>PDF417 supports more data and flexible symbol shapes. MicroPDF417 is smaller but has tighter capacity limits, so use it only when space is limited and the encoded value is short enough.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="faq-section">
+      <h2>Still need a tool?</h2>
+      <p>Open the <a href="/barcode-generator/">all-formats batch generator</a>, or choose a barcode format from the navigation above.</p>
+    </section>
+  </main>
+</body>
+</html>

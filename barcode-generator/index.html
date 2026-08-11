@@ -27,7 +27,7 @@
   <meta property="og:url" content="https://www.batchbarcode.com/barcode-generator/">
   <meta name="twitter:card" content="summary">
   <link rel="canonical" href="https://www.batchbarcode.com/barcode-generator/">
-  <link rel="stylesheet" href="/assets/barcode-tools.css?v=20260811-10">
+  <link rel="stylesheet" href="/assets/barcode-tools.css?v=20260811-14">
 </head>
 <body data-page-type="batch_barcode_generator" data-batch="true" data-layout="true">
   <header class="site-header">
@@ -41,12 +41,18 @@
       <a href="/data-matrix-barcode-generator/">Data Matrix</a>
       <a href="/ean-13-barcode-generator/">EAN-13</a>
       <a href="/upc-a-barcode-generator/">UPC-A</a>
+      <a href="/barcode-faq/">Help &amp; FAQ</a>
     </nav>
   </header>
   <main class="app">
     <aside class="controls">
       <h1>Free Batch Barcode Generator</h1>
       <p class="subhead">Paste multiple values, choose a barcode format, and generate the batch locally.</p>
+
+      <nav class="generator-mode" aria-label="Generator mode">
+        <a id="singleModeLink" href="/">Single barcode</a>
+        <span aria-current="page">Batch &amp; A4 PDF</span>
+      </nav>
 
       <label for="barcodeType">Barcode type</label>
       <select id="barcodeType">
@@ -209,6 +215,13 @@ BATCH-2026-0003</textarea>
           <li>UPC-A for 12-digit retail product codes.</li>
           <li>Data Matrix for compact 2D labels and part IDs.</li>
         </ul>
+        <h3>Batch barcode FAQ</h3>
+        <div class="faq-list">
+          <details><summary>Why is a batch limited to 100 barcodes?</summary><p>The limit keeps browser rendering, previews and PDF export responsive. Split larger jobs into batches of 100; extra rows are never silently discarded.</p></details>
+          <details><summary>Are uploaded CSV and Excel files sent to a server?</summary><p>No. Spreadsheet parsing and barcode generation run locally in this browser, and analytics do not include file names, column names or barcode values.</p></details>
+          <details><summary>Can the batch tool create both A4 and Letter PDFs?</summary><p>Yes. Choose the paper size, rows, columns, margins and gaps in Label layout, then use Download PDF or Print batch.</p></details>
+        </div>
+        <p><a href="/barcode-faq/">See all barcode, batch and printing questions →</a></p>
         <h3>Related tools</h3>
         <ul class="link-list">
           <li><a href="/">PDF417 label generator</a></li>
@@ -227,6 +240,6 @@ BATCH-2026-0003</textarea>
   <script src="/assets/vendor/jszip.min.js?v=3.10.1"></script>
   <script src="/assets/vendor/jspdf.umd.min.js?v=4.2.1"></script>
   <script src="/assets/vendor/bwip-js-min.js?v=4.5.1"></script>
-  <script src="/assets/barcode-tools.js?v=20260811-12"></script>
+  <script src="/assets/barcode-tools.js?v=20260811-15"></script>
 </body>
 </html>

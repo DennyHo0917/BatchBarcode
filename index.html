@@ -90,30 +90,6 @@
             "@type": "Answer",
             "text": "Common causes are too much data, a barcode printed too small, low quiet-zone margin, or an error correction level that is too low for the printing environment."
           }
-        },
-        {
-          "@type": "Question",
-          "name": "When should I use PDF417 instead of Code 128 or QR codes?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Use PDF417 when you need a printable 2D barcode for labels, documents, tickets, or inventory records that must store more data than a linear barcode while remaining scanner friendly."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "What PDF417 settings matter for printing?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "The most important settings are barcode size, quiet-zone padding, row and column layout, and error correction level. Higher error correction improves durability but makes the symbol larger."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I print a sheet of PDF417 labels?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. Generate multiple values in batch mode, preview the label sheet, then use the print button to print the generated PDF417 labels."
-          }
         }
       ]
     }
@@ -132,6 +108,7 @@
       ]
     }
   </script>
+  <link rel="stylesheet" href="/assets/barcode-tools.css?v=20260811-14">
   <style>
     :root {
       color-scheme: light;
@@ -247,6 +224,38 @@
     .subhead {
       margin: 0 0 20px;
       color: var(--muted);
+    }
+
+    .generator-mode {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      margin: -6px 0 20px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--bg);
+      padding: 4px;
+    }
+
+    .generator-mode a,
+    .generator-mode span {
+      border-radius: 5px;
+      padding: 9px 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .generator-mode a:hover {
+      color: var(--ink);
+      background: #fff;
+    }
+
+    .generator-mode [aria-current="page"] {
+      background: var(--accent);
+      color: #fff;
     }
 
     .section {
@@ -545,7 +554,7 @@
     }
   </style>
 </head>
-<body>
+<body data-bcid="pdf417" data-page-type="pdf417_generator">
   <header class="site-header">
     <a class="site-brand" href="/">BatchBarcode</a>
     <nav class="site-nav" aria-label="Barcode generators">
@@ -557,12 +566,18 @@
       <a href="/data-matrix-barcode-generator/">Data Matrix</a>
       <a href="/ean-13-barcode-generator/">EAN-13</a>
       <a href="/upc-a-barcode-generator/">UPC-A</a>
+      <a href="/barcode-faq/">Help &amp; FAQ</a>
     </nav>
   </header>
   <main class="app">
     <aside class="controls">
       <h1>Free Online PDF417 Barcode Generator</h1>
       <p class="subhead">Batch CSV data into printable, scan-safe PDF417 barcode labels. Generate locally in your browser.</p>
+
+      <nav class="generator-mode" aria-label="Generator mode">
+        <span aria-current="page">Single / quick labels</span>
+        <a href="?mode=batch">Batch &amp; A4 PDF</a>
+      </nav>
 
       <label for="payload">1. Add barcode data</label>
       <textarea id="payload" spellcheck="false">SHIP-2026-0001
@@ -782,25 +797,15 @@ DOC-LOCAL-DEMO</textarea>
           <summary>Why does my PDF417 barcode not scan?</summary>
           <p>Common causes are too much data, a barcode printed too small, low quiet-zone margin, or an error correction level that is too low for the printing environment.</p>
         </details>
-        <details>
-          <summary>When should I use PDF417 instead of Code 128 or QR codes?</summary>
-          <p>Use PDF417 when you need a printable 2D barcode for labels, documents, tickets, or inventory records that must store more data than a linear barcode while remaining scanner friendly.</p>
-        </details>
-        <details>
-          <summary>What PDF417 settings matter for printing?</summary>
-          <p>The most important settings are barcode size, quiet-zone padding, row and column layout, and error correction level. Higher error correction improves durability but makes the symbol larger.</p>
-        </details>
-        <details>
-          <summary>Can I print a sheet of PDF417 labels?</summary>
-          <p>Yes. Generate multiple values in batch mode, preview the label sheet, then use the print button to print the generated PDF417 labels.</p>
-        </details>
+        <p><a href="/barcode-faq/">See all barcode, batch, PDF and printing questions →</a></p>
       </section>
     </section>
   </main>
 
   <script src="/assets/vendor/bwip-js-min.js?v=4.5.1"></script>
-  <script src="/assets/barcode-tools.js?v=20260811-12"></script>
+  <script src="/assets/barcode-tools.js?v=20260811-15"></script>
   <script>
+    if (new URLSearchParams(location.search).get('mode') !== 'batch') {
     const els = {
       payload: document.querySelector('#payload'),
       preset: document.querySelector('#preset'),
@@ -976,6 +981,7 @@ DOC-LOCAL-DEMO</textarea>
 
     applyPreset();
     render();
+    }
   </script>
 </body>
 </html>

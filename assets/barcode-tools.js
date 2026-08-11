@@ -1,4 +1,4 @@
-(function (root) {
+(async function (root) {
   function parseCsv(input) {
     const rows = [];
     let row = [];
@@ -190,7 +190,144 @@
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (typeof document === 'undefined') return;
 
+  const formatNames = {
+    code128: 'Code 128',
+    ean13: 'EAN-13',
+    upca: 'UPC-A',
+    pdf417: 'PDF417',
+    micropdf417: 'MicroPDF417',
+    qrcode: 'QR code',
+    datamatrix: 'Data Matrix',
+  };
+  const singleToolPaths = {
+    code128: '/code-128-barcode-generator/',
+    ean13: '/ean-13-barcode-generator/',
+    upca: '/upc-a-barcode-generator/',
+    pdf417: '/',
+    micropdf417: '/micro-pdf417-generator/',
+    qrcode: '/qr-code-generator/',
+    datamatrix: '/data-matrix-barcode-generator/',
+  };
+  const sampleValues = {
+    ean13: '5901234123457\n4006381333931',
+    upca: '012345678905\n036000291452',
+    qrcode: 'https://www.batchbarcode.com/\nhttps://www.batchbarcode.com/qr-code-generator/',
+    pdf417: 'SHIP-2026-0001\nINV-AX9-4821\nDOC-LOCAL-DEMO',
+    micropdf417: 'DOC-2026-0001\nDOC-2026-0002',
+    datamatrix: 'PART-AX9-001\nPART-AX9-002',
+    code128: 'BATCH-2026-0001\nBATCH-2026-0002\nBATCH-2026-0003',
+  };
+
+  function mountFixedBatchUi(type) {
+    const controls = document.querySelector('.controls');
+    const workspace = document.querySelector('.workspace');
+    if (!controls || !workspace) return;
+    const name = formatNames[type] || 'Barcode';
+    controls.innerHTML = `
+      <h1>${name} Batch Label Generator</h1>
+      <p class="subhead">Create multiple ${name} labels on an A4 or Letter sheet without leaving this format.</p>
+      <nav class="generator-mode" aria-label="Generator mode">
+        <a id="singleModeLink" href="${singleToolPaths[type] || '/'}">Single barcode</a>
+        <span aria-current="page">Batch &amp; A4 PDF</span>
+      </nav>
+      <label for="inputMode">Input format</label>
+      <select id="inputMode">
+        <option value="lines">One value per line</option>
+        <option value="csv">CSV first column</option>
+      </select>
+      <div class="section">
+        <label for="barcodeData">Barcode data</label>
+        <textarea id="barcodeData" spellcheck="false">${sampleValues[type] || sampleValues.code128}</textarea>
+        <p class="hint">Up to 100 values. One barcode is created for each usable row.</p>
+      </div>
+      <div class="section csv-import">
+        <label for="csvFile">Or upload CSV / Excel</label>
+        <input id="csvFile" type="file" accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+        <p class="hint">CSV or .xlsx, maximum 5 MB and 100 usable rows. Files stay in this browser.</p>
+        <div id="csvMapping" class="csv-mapping" hidden>
+          <div class="mapping-head"><strong id="csvFileName"></strong><button id="clearCsv" type="button">Clear file</button></div>
+          <label class="checkbox-field" for="headerRow"><input id="headerRow" type="checkbox" checked> First row contains column names</label>
+          <div class="layout-grid">
+            <div><label for="barcodeColumn">Barcode value</label><select id="barcodeColumn"></select></div>
+            <div><label for="labelColumn">Label text</label><select id="labelColumn"></select></div>
+            <div><label for="extraColumn">Extra text</label><select id="extraColumn"></select></div>
+          </div>
+          <p class="csv-summary" id="csvSummary"></p>
+          <div class="csv-preview" id="csvPreview" aria-label="CSV data preview"></div>
+        </div>
+      </div>
+      <div class="section"><label for="scale">Barcode scale</label><input id="scale" type="number" min="1" max="8" value="3"></div>
+      <div class="actions">
+        <button class="primary" id="generate" type="button">Generate batch</button>
+        <button id="download" type="button" disabled>Download first PNG</button>
+        <button id="downloadAll" type="button" disabled>Download PNG ZIP</button>
+        <button id="downloadPdf" type="button" disabled>Download PDF</button>
+        <button id="print" type="button" disabled>Print batch</button>
+      </div>
+      <p class="status" id="status"></p>
+      <details class="layout-settings section" open>
+        <summary>Label layout</summary>
+        <label for="layoutPreset">Layout preset</label>
+        <select id="layoutPreset">
+          <option value="a4-2x4">A4 · 2 columns × 4 rows</option>
+          <option value="letter-3x3">Letter · 3 columns × 3 rows</option>
+          <option value="custom">Custom</option>
+        </select>
+        <div class="layout-grid">
+          <div><label for="pageSize">Page size</label><select id="pageSize"><option value="a4">A4</option><option value="letter">Letter</option></select></div>
+          <div><label for="pageMargin">Margin (mm)</label><input id="pageMargin" type="number" min="0" max="25" value="10"></div>
+          <div><label for="labelColumns">Columns</label><input id="labelColumns" type="number" min="1" max="4" value="2"></div>
+          <div><label for="labelRows">Rows</label><input id="labelRows" type="number" min="1" max="10" value="4"></div>
+          <div><label for="labelGap">Gap (mm)</label><input id="labelGap" type="number" min="0" max="20" value="4"></div>
+          <div><label for="textPosition">Text position</label><select id="textPosition"><option value="bottom">Below barcode</option><option value="top">Above barcode</option></select></div>
+        </div>
+        <label class="checkbox-field" for="showText"><input id="showText" type="checkbox" checked> Show label text</label>
+        <div class="layout-footer"><p class="hint">Saved in this browser. Test one page before a large run.</p><button id="resetLayout" type="button">Restore defaults</button></div>
+      </details>
+      <p class="hint section">Generated locally. Barcode data is not uploaded.</p>`;
+
+    workspace.querySelector('.preview-head')?.remove();
+    workspace.querySelector('#preview, #sheet')?.remove();
+    workspace.insertAdjacentHTML('afterbegin', `
+      <div class="preview-head"><h2>${name} batch preview</h2><p class="hint" id="count">No barcodes yet</p></div>
+      <div id="preview" class="preview batch-preview">Batch preview will appear here.</div>`);
+  }
+
+  function loadScript(src, ready) {
+    if (ready()) return Promise.resolve();
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = resolve;
+      script.onerror = resolve;
+      document.head.append(script);
+    });
+  }
+
   const fixedType = document.body.dataset.bcid || '';
+  const fixedBatchMode = fixedType && new URLSearchParams(root.location.search).get('mode') === 'batch';
+  if (fixedBatchMode) {
+    document.body.dataset.batch = 'true';
+    document.body.dataset.layout = 'true';
+    document.body.dataset.pageType = `${fixedType}_batch_generator`;
+    mountFixedBatchUi(fixedType);
+  }
+  if (document.body.dataset.batch === 'true') {
+    document.querySelectorAll('.site-nav a').forEach((link) => {
+      const url = new URL(link.href, root.location.href);
+      if (Object.values(singleToolPaths).includes(url.pathname)) {
+        url.searchParams.set('mode', 'batch');
+        link.href = `${url.pathname}${url.search}`;
+      }
+    });
+  }
+  if (fixedBatchMode) {
+    await Promise.all([
+      loadScript('/assets/vendor/xlsx.full.min.js?v=0.20.3', () => Boolean(root.XLSX)),
+      loadScript('/assets/vendor/jszip.min.js?v=3.10.1', () => Boolean(root.JSZip)),
+      loadScript('/assets/vendor/jspdf.umd.min.js?v=4.2.1', () => Boolean(root.jspdf)),
+    ]);
+  }
   const batchMode = document.body.dataset.batch === 'true';
   const layoutEnabled = document.body.dataset.layout === 'true';
   const pageType = document.body.dataset.pageType || 'barcode_tool';
@@ -231,15 +368,14 @@
   // The PDF417 homepage only reuses the parsing helpers above.
   if (!els.data) return;
 
-  const names = {
-    code128: 'Code 128',
-    ean13: 'EAN-13',
-    upca: 'UPC-A',
-    pdf417: 'PDF417',
-    micropdf417: 'MicroPDF417',
-    qrcode: 'QR code',
-    datamatrix: 'Data Matrix',
-  };
+  const names = formatNames;
+  const requestedType = new URLSearchParams(root.location.search).get('type');
+  if (!fixedType && els.type && names[requestedType]) els.type.value = requestedType;
+
+  const singleModeLink = document.querySelector('#singleModeLink');
+  function syncSingleModeLink() {
+    if (singleModeLink) singleModeLink.href = singleToolPaths[barcodeType()] || '/';
+  }
 
   let firstCanvas = null;
   let currentCount = 0;
@@ -936,6 +1072,7 @@
     root.print();
   });
   if (els.type) els.type.addEventListener('change', () => {
+    syncSingleModeLink();
     renderCsvPreview();
     render(false);
   });
@@ -965,5 +1102,6 @@
   if (els.resetLayout) els.resetLayout.addEventListener('click', resetLayoutPreferences);
 
   restoreLayoutPreferences();
+  syncSingleModeLink();
   render(false);
 }(typeof window !== 'undefined' ? window : globalThis));

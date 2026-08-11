@@ -27,7 +27,7 @@
   <meta property="og:url" content="https://www.batchbarcode.com/code-128-barcode-generator/">
   <meta name="twitter:card" content="summary">
   <link rel="canonical" href="https://www.batchbarcode.com/code-128-barcode-generator/">
-  <link rel="stylesheet" href="/assets/barcode-tools.css?v=20260811-10">
+  <link rel="stylesheet" href="/assets/barcode-tools.css?v=20260811-14">
 </head>
 <body data-bcid="code128" data-page-type="code128_generator">
   <header class="site-header">
@@ -41,12 +41,18 @@
       <a href="/data-matrix-barcode-generator/">Data Matrix</a>
       <a href="/ean-13-barcode-generator/">EAN-13</a>
       <a href="/upc-a-barcode-generator/">UPC-A</a>
+      <a href="/barcode-faq/">Help &amp; FAQ</a>
     </nav>
   </header>
   <main class="app">
     <aside class="controls">
       <h1>Free Online Code 128 Barcode Generator</h1>
       <p class="subhead">Generate Code 128 barcodes for inventory labels, order IDs, asset tags, and test scans.</p>
+
+      <nav class="generator-mode" aria-label="Generator mode">
+        <span aria-current="page">Single barcode</span>
+        <a href="?mode=batch">Batch &amp; A4 PDF</a>
+      </nav>
 
       <label for="barcodeData">Data</label>
       <textarea id="barcodeData" spellcheck="false">INV-AX9-4821</textarea>
@@ -86,6 +92,13 @@
           <li>Shipping, picking, and packing workflow references.</li>
           <li>Asset tags, document IDs, and internal tracking labels.</li>
         </ul>
+        <h3>Code 128 FAQ</h3>
+        <div class="faq-list">
+          <details><summary>Can I print a batch of Code 128 labels on A4 paper?</summary><p>Yes. Select Batch &amp; A4 PDF above, enter one value per line or import a spreadsheet, then choose the A4 label layout.</p></details>
+          <details><summary>What data works well in Code 128?</summary><p>Code 128 is best for compact letters, numbers and common punctuation used in SKUs, asset IDs and order references. Use QR code for long text, URLs or broader character support.</p></details>
+          <details><summary>Why is my Code 128 barcode very wide?</summary><p>Long values and a high scale create wider bars. Shorten the encoded value or lower the scale, then test the printed result with the final scanner.</p></details>
+        </div>
+        <p><a href="/barcode-faq/">More barcode and printing questions →</a></p>
         <h3>Related tools</h3>
         <ul class="link-list">
           <li><a href="/barcode-generator/">Barcode generator</a></li>
@@ -100,6 +113,6 @@
   </main>
 
   <script src="/assets/vendor/bwip-js-min.js?v=4.5.1"></script>
-  <script src="/assets/barcode-tools.js?v=20260811-12"></script>
+  <script src="/assets/barcode-tools.js?v=20260811-15"></script>
 </body>
 </html>

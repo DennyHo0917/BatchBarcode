@@ -27,7 +27,7 @@
   <meta property="og:url" content="https://www.batchbarcode.com/ean-13-barcode-generator/">
   <meta name="twitter:card" content="summary">
   <link rel="canonical" href="https://www.batchbarcode.com/ean-13-barcode-generator/">
-  <link rel="stylesheet" href="/assets/barcode-tools.css?v=20260811-10">
+  <link rel="stylesheet" href="/assets/barcode-tools.css?v=20260811-14">
 </head>
 <body data-bcid="ean13" data-page-type="ean13_generator">
   <header class="site-header">
@@ -41,12 +41,18 @@
       <a href="/data-matrix-barcode-generator/">Data Matrix</a>
       <a href="/ean-13-barcode-generator/" aria-current="page">EAN-13</a>
       <a href="/upc-a-barcode-generator/">UPC-A</a>
+      <a href="/barcode-faq/">Help &amp; FAQ</a>
     </nav>
   </header>
   <main class="app">
     <aside class="controls">
       <h1>Free Online EAN-13 Barcode Generator</h1>
       <p class="subhead">Generate a retail-style EAN-13 barcode from a 12 or 13 digit product code.</p>
+
+      <nav class="generator-mode" aria-label="Generator mode">
+        <span aria-current="page">Single barcode</span>
+        <a href="?mode=batch">Batch &amp; A4 PDF</a>
+      </nav>
 
       <label for="barcodeData">EAN-13 digits</label>
       <input id="barcodeData" inputmode="numeric" pattern="[0-9]*" value="5901234123457">
@@ -86,6 +92,13 @@
           <li>Enter 12 digits when you want the check digit calculated.</li>
           <li>Enter 13 digits when you already know the full EAN-13 value.</li>
         </ul>
+        <h3>EAN-13 FAQ</h3>
+        <div class="faq-list">
+          <details><summary>Should I enter 12 or 13 digits for EAN-13?</summary><p>Enter 12 digits to calculate the final check digit, or enter all 13 digits when you already have a complete valid EAN-13 number.</p></details>
+          <details><summary>Can I generate an EAN-13 batch from Excel?</summary><p>Yes. Select Batch &amp; A4 PDF, import the spreadsheet, and map the product-code column. Invalid rows are reported before output.</p></details>
+          <details><summary>What is the difference between EAN-13 and UPC-A?</summary><p>EAN-13 contains 13 digits and is widely used internationally. UPC-A contains 12 digits and is common in North American retail systems.</p></details>
+        </div>
+        <p><a href="/barcode-faq/">More barcode and printing questions →</a></p>
         <h3>Related tools</h3>
         <ul class="link-list">
           <li><a href="/barcode-generator/">Barcode generator</a></li>
@@ -100,6 +113,6 @@
   </main>
 
   <script src="/assets/vendor/bwip-js-min.js?v=4.5.1"></script>
-  <script src="/assets/barcode-tools.js?v=20260811-12"></script>
+  <script src="/assets/barcode-tools.js?v=20260811-15"></script>
 </body>
 </html>

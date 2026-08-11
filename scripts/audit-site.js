@@ -3,9 +3,19 @@ const path = require('path');
 
 const root = path.resolve(__dirname, '..');
 const sitemap = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
+const llms = fs.readFileSync(path.join(root, 'llms.txt'), 'utf8');
 const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
 const errors = [];
 const seen = { title: new Map(), description: new Map(), h1: new Map() };
+const batchTypes = new Map([
+  ['index.html', 'pdf417'],
+  ['code-128-barcode-generator/index.html', 'code128'],
+  ['data-matrix-barcode-generator/index.html', 'datamatrix'],
+  ['ean-13-barcode-generator/index.html', 'ean13'],
+  ['micro-pdf417-generator/index.html', 'micropdf417'],
+  ['qr-code-generator/index.html', 'qrcode'],
+  ['upc-a-barcode-generator/index.html', 'upca'],
+]);
 
 function addSeen(kind, value, file) {
   if (!value) return;
@@ -15,6 +25,7 @@ function addSeen(kind, value, file) {
 }
 
 for (const url of urls) {
+  if (!llms.includes(`](${url})`)) errors.push(`Missing llms.txt URL: ${url}`);
   const parsed = new URL(url);
   const relative = parsed.pathname === '/' ? 'index.html' : `${parsed.pathname.slice(1)}index.html`;
   const file = path.join(root, relative);
@@ -39,6 +50,18 @@ for (const url of urls) {
   }
   if (canonical !== url) errors.push(`Canonical mismatch in ${relative}: ${canonical || 'missing'} != ${url}`);
   if (ogUrl !== url) errors.push(`Open Graph URL mismatch in ${relative}: ${ogUrl || 'missing'} != ${url}`);
+  if (!html.includes('href="/barcode-faq/"')) errors.push(`Missing FAQ navigation link in ${relative}`);
+  if (relative === 'barcode-faq/index.html' && (html.match(/<details/g) || []).length < 12) {
+    errors.push('FAQ hub has fewer than 12 visible questions');
+  }
+
+  const batchType = batchTypes.get(relative);
+  if (batchType && !html.includes('href="?mode=batch"')) {
+    errors.push(`Missing batch A4 mode link in ${relative}`);
+  }
+  if (relative === 'barcode-generator/index.html' && !html.includes('id="singleModeLink"')) {
+    errors.push('Missing single-mode return link in barcode-generator/index.html');
+  }
 
   for (const link of internalLinks) {
     const target = link === '/'

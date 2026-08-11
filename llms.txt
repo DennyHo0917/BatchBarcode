@@ -1,0 +1,24 @@
+# BatchBarcode
+
+> Free, privacy-first browser tools for generating single barcodes and printable batch label sheets from text, CSV or Excel data.
+
+BatchBarcode is a static web application. Barcode rendering, spreadsheet parsing and file export run locally in the browser. The site supports up to 100 usable rows per batch, A4 and Letter layouts, PNG downloads, PNG ZIP export, direct PDF export and browser printing.
+
+## Core workflow
+
+- [Batch Barcode Generator](https://www.batchbarcode.com/barcode-generator/): Generate Code 128, QR code, PDF417, MicroPDF417, EAN-13, UPC-A or Data Matrix batches from pasted rows, CSV or Excel, then export printable label sheets.
+- [Barcode Help and FAQ](https://www.batchbarcode.com/barcode-faq/): Answers about format selection, local data processing, batch limits, spreadsheet import, A4 and Letter PDFs, printing and scan failures.
+
+## Barcode generators
+
+- [PDF417 Barcode Generator](https://www.batchbarcode.com/): Create PDF417 labels for documents, inventory, shipping and ticket workflows, with quick-label and batch A4 modes.
+- [MicroPDF417 Barcode Generator](https://www.batchbarcode.com/micro-pdf417-generator/): Create compact stacked barcodes for shorter values and limited label space.
+- [Code 128 Barcode Generator](https://www.batchbarcode.com/code-128-barcode-generator/): Create compact alphanumeric barcodes for inventory IDs, SKUs, orders and asset labels.
+- [QR Code Generator](https://www.batchbarcode.com/qr-code-generator/): Create QR codes for URLs and text, individually or as printable batches.
+- [Data Matrix Barcode Generator](https://www.batchbarcode.com/data-matrix-barcode-generator/): Create compact 2D codes for part IDs, serial numbers and asset labels.
+- [EAN-13 Barcode Generator](https://www.batchbarcode.com/ean-13-barcode-generator/): Create and validate 12- or 13-digit EAN-13 retail barcodes.
+- [UPC-A Barcode Generator](https://www.batchbarcode.com/upc-a-barcode-generator/): Create and validate 11- or 12-digit UPC-A retail barcodes.
+
+## Optional
+
+- [XML Sitemap](https://www.batchbarcode.com/sitemap.xml): Canonical index of public BatchBarcode pages.
