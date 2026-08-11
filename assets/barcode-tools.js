@@ -42,7 +42,43 @@
     return parseCsv(line)[0]?.[0] || '';
   }
 
-  function parseBatchValues(input, mode = 'lines', limit = 100) {
+  const BATCH_LIMIT = 100;
+  const librarySources = {
+    xlsx: { src: '/assets/vendor/xlsx.full.min.js?v=0.20.3', global: 'XLSX', label: 'Excel' },
+    zip: { src: '/assets/vendor/jszip.min.js?v=3.10.1', global: 'JSZip', label: 'ZIP' },
+    pdf: { src: '/assets/vendor/jspdf.umd.min.js?v=4.2.1', global: 'jspdf', label: 'PDF' },
+  };
+
+  function libraryError(label) {
+    const error = new Error(`${label} library did not load.`);
+    error.code = 'library_unavailable';
+    return error;
+  }
+
+  function createLibraryLoader(doc, target, sources = librarySources) {
+    const loads = new Map();
+    function loadScript(src, ready, label) {
+      if (ready()) return Promise.resolve();
+      if (loads.has(src)) return loads.get(src);
+      const load = new Promise((resolve, reject) => {
+        const script = doc.createElement('script');
+        script.src = src;
+        script.async = true;
+        script.addEventListener('load', () => ready() ? resolve() : reject(libraryError(label)), { once: true });
+        script.addEventListener('error', () => reject(libraryError(label)), { once: true });
+        doc.head.append(script);
+      });
+      loads.set(src, load);
+      return load;
+    }
+    return function ensureLibrary(name) {
+      const source = sources[name];
+      if (!source) return Promise.reject(libraryError(name));
+      return loadScript(source.src, () => Boolean(target[source.global]), source.label);
+    };
+  }
+
+  function parseBatchValues(input, mode = 'lines', limit = BATCH_LIMIT) {
     const values = (mode === 'csv'
       ? parseCsv(input).map((row) => row[0])
       : input.split(/\r?\n/).map((line) => line.trim()))
@@ -142,7 +178,7 @@
     return rows[0].some((cell) => commonHeader.test(cell.trim()));
   }
 
-  function mapCsvRows(rows, hasHeader, valueIndex, labelIndex = -1, extraIndex = -1, limit = 100) {
+  function mapCsvRows(rows, hasHeader, valueIndex, labelIndex = -1, extraIndex = -1, limit = BATCH_LIMIT) {
     const dataRows = rows.slice(hasHeader ? 1 : 0);
     const seen = new Set();
     let empty = 0;
@@ -174,7 +210,30 @@
     };
   }
 
+  function batchLimitMessage(total) {
+    return `${total} values detected. The current limit is ${BATCH_LIMIT}; split this into smaller batches.`;
+  }
+
+  function highVolumeEventParams({
+    batchSizeBucket,
+    frequency,
+    printerType,
+    emailProvided,
+    pageType,
+    inputSource,
+  }) {
+    return {
+      batch_size_bucket: String(batchSizeBucket || ''),
+      frequency: String(frequency || ''),
+      printer_type: String(printerType || ''),
+      email_provided: emailProvided ? 'yes' : 'no',
+      page_type: String(pageType || 'unknown'),
+      input_source: String(inputSource || 'unknown'),
+    };
+  }
+
   const api = {
+    BATCH_LIMIT,
     csvFirstCell,
     parseCsv,
     parseBatchValues,
@@ -185,6 +244,10 @@
     pageCountFor,
     countBucket,
     normalizeLayoutPreferences,
+    batchLimitMessage,
+    highVolumeEventParams,
+    librarySources,
+    createLibraryLoader,
   };
   root.BatchBarcodeTools = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
@@ -265,6 +328,56 @@
         <button id="print" type="button" disabled>Print batch</button>
       </div>
       <p class="status" id="status"></p>
+      <section id="highVolumeCta" class="high-volume-interest section" hidden aria-labelledby="highVolumeTitle">
+        <p><strong id="highVolumeTitle">Need more than 100 labels?</strong><br>Tell us about your workflow — larger batch support is being evaluated.</p>
+        <button id="highVolumeOpen" type="button">Request larger batches</button>
+        <div id="highVolumeInterest" hidden>
+          <form id="highVolumeForm">
+            <div class="high-volume-grid">
+              <div>
+                <label for="highVolumeSize">Batch size</label>
+                <select id="highVolumeSize" name="batch_size_bucket" required>
+                  <option value="">Choose one</option>
+                  <option value="101_500">101–500</option>
+                  <option value="501_5000">501–5,000</option>
+                  <option value="5001_plus">5,001+</option>
+                </select>
+              </div>
+              <div>
+                <label for="highVolumeFrequency">Frequency</label>
+                <select id="highVolumeFrequency" name="frequency" required>
+                  <option value="">Choose one</option>
+                  <option value="one_time">One time</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="daily">Daily</option>
+                </select>
+              </div>
+              <div>
+                <label for="highVolumePrinter">Printer type</label>
+                <select id="highVolumePrinter" name="printer_type" required>
+                  <option value="">Choose one</option>
+                  <option value="office_printer">Office printer</option>
+                  <option value="zebra">Zebra</option>
+                  <option value="brother">Brother</option>
+                  <option value="dymo">DYMO</option>
+                  <option value="other">Other</option>
+                  <option value="not_sure">Not sure</option>
+                </select>
+              </div>
+              <div>
+                <label for="highVolumeEmail">Optional email</label>
+                <input id="highVolumeEmail" name="email" type="email" autocomplete="email">
+              </div>
+            </div>
+            <label for="highVolumeWorkflow">What are you trying to print? (optional)</label>
+            <textarea id="highVolumeWorkflow" name="workflow" maxlength="300" rows="3"></textarea>
+            <p class="hint">No barcode data, file names or column names are sent. This static version records an anonymous interest signal only; the optional email is not sent yet.</p>
+            <button class="primary" type="submit">Submit request</button>
+            <p class="status" id="highVolumeStatus" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
       <details class="layout-settings section" open>
         <summary>Label layout</summary>
         <label for="layoutPreset">Layout preset</label>
@@ -293,16 +406,7 @@
       <div id="preview" class="preview batch-preview">Batch preview will appear here.</div>`);
   }
 
-  function loadScript(src, ready) {
-    if (ready()) return Promise.resolve();
-    return new Promise((resolve) => {
-      const script = document.createElement('script');
-      script.src = src;
-      script.onload = resolve;
-      script.onerror = resolve;
-      document.head.append(script);
-    });
-  }
+  const ensureLibrary = createLibraryLoader(document, root);
 
   const fixedType = document.body.dataset.bcid || '';
   const fixedBatchMode = fixedType && new URLSearchParams(root.location.search).get('mode') === 'batch';
@@ -320,13 +424,6 @@
         link.href = `${url.pathname}${url.search}`;
       }
     });
-  }
-  if (fixedBatchMode) {
-    await Promise.all([
-      loadScript('/assets/vendor/xlsx.full.min.js?v=0.20.3', () => Boolean(root.XLSX)),
-      loadScript('/assets/vendor/jszip.min.js?v=3.10.1', () => Boolean(root.JSZip)),
-      loadScript('/assets/vendor/jspdf.umd.min.js?v=4.2.1', () => Boolean(root.jspdf)),
-    ]);
   }
   const batchMode = document.body.dataset.batch === 'true';
   const layoutEnabled = document.body.dataset.layout === 'true';
@@ -352,6 +449,11 @@
     downloadPdf: document.querySelector('#downloadPdf'),
     print: document.querySelector('#print'),
     status: document.querySelector('#status'),
+    highVolumeCta: document.querySelector('#highVolumeCta'),
+    highVolumeOpen: document.querySelector('#highVolumeOpen'),
+    highVolumeInterest: document.querySelector('#highVolumeInterest'),
+    highVolumeForm: document.querySelector('#highVolumeForm'),
+    highVolumeStatus: document.querySelector('#highVolumeStatus'),
     preview: document.querySelector('#preview'),
     count: document.querySelector('#count'),
     pageSize: document.querySelector('#pageSize'),
@@ -382,6 +484,7 @@
   let csvState = null;
   let currentExport = null;
   let mappingTracked = false;
+  let highVolumeInterestOpened = false;
   const layoutStorageKey = 'batchbarcode.layout.v1';
 
   function barcodeType() {
@@ -391,6 +494,15 @@
   function setStatus(text, kind) {
     els.status.textContent = text;
     els.status.className = `status ${kind || ''}`;
+  }
+
+  function setHighVolumeCtaVisible(visible) {
+    if (!els.highVolumeCta) return;
+    els.highVolumeCta.hidden = !visible;
+    if (!visible) {
+      els.highVolumeInterest.hidden = true;
+      els.highVolumeOpen.hidden = false;
+    }
   }
 
   function trackEvent(name, params = {}) {
@@ -411,6 +523,37 @@
       count_bucket: countBucket(count),
       ...extra,
     };
+  }
+
+  function openHighVolumeForm() {
+    if (!els.highVolumeInterest) return;
+    els.highVolumeInterest.hidden = false;
+    els.highVolumeOpen.hidden = true;
+    if (!highVolumeInterestOpened) {
+      highVolumeInterestOpened = true;
+      trackEvent('high_volume_interest_open', {
+        page_type: pageType,
+        input_source: inputSource(),
+      });
+    }
+  }
+
+  function submitHighVolumeForm(event) {
+    event.preventDefault();
+    const form = els.highVolumeForm;
+    const email = form.elements.email.value.trim();
+    // ponytail: analytics-only until a backend is justified by demand.
+    trackEvent('high_volume_interest', highVolumeEventParams({
+      batchSizeBucket: form.elements.batch_size_bucket.value,
+      frequency: form.elements.frequency.value,
+      printerType: form.elements.printer_type.value,
+      emailProvided: Boolean(email),
+      pageType,
+      inputSource: inputSource(),
+    }));
+    form.reset();
+    els.highVolumeStatus.textContent = 'Thanks — your anonymous interest was recorded. No barcode data or email was sent.';
+    els.highVolumeStatus.className = 'status ok';
   }
 
   function layoutContext(layout, count) {
@@ -537,7 +680,8 @@
     let sheetName = '';
     try {
       if (extension === 'xlsx') {
-        if (!root.XLSX) throw new Error('Excel library unavailable');
+        await ensureLibrary('xlsx');
+        if (!root.XLSX) throw libraryError('Excel');
         const workbook = root.XLSX.read(await file.arrayBuffer(), { type: 'array' });
         sheetName = workbook.SheetNames[0] || '';
         if (!sheetName) throw new Error('No worksheet');
@@ -551,8 +695,12 @@
         rows = parseCsv(await file.text());
       }
     } catch (error) {
-      setStatus(`Could not read this ${extension === 'xlsx' ? 'Excel' : 'CSV'} file.`, 'warn');
-      trackEvent('import_result', { result: 'error', error_code: 'read_error', file_type: extension, page_type: pageType });
+      const errorCode = error.code === 'library_unavailable' ? 'library_unavailable' : 'read_error';
+      const message = errorCode === 'library_unavailable'
+        ? 'Excel library did not load. Check the network and try again.'
+        : `Could not read this ${extension === 'xlsx' ? 'Excel' : 'CSV'} file.`;
+      setStatus(message, 'warn');
+      trackEvent('import_result', { result: 'error', error_code: errorCode, file_type: extension, page_type: pageType });
       els.csvFile.value = '';
       return;
     }
@@ -573,7 +721,12 @@
     els.headerRow.checked = looksLikeHeader(rows);
     refreshCsvMapping();
     render(false);
-    setStatus(`${file.name} loaded locally${sheetName ? ` from “${sheetName}”` : ''}. Review the field mapping and preview.`, 'ok');
+    const imported = inputValues();
+    if (imported.truncated) {
+      setStatus(batchLimitMessage(imported.total), 'warn');
+    } else {
+      setStatus(`${file.name} loaded locally${sheetName ? ` from “${sheetName}”` : ''}. Review the field mapping and preview.`, 'ok');
+    }
     trackEvent('import_result', {
       result: 'success',
       error_code: 'none',
@@ -607,10 +760,10 @@
         selectedColumn(els.barcodeColumn),
         selectedColumn(els.labelColumn),
         selectedColumn(els.extraColumn),
-        100,
+        BATCH_LIMIT,
       );
     }
-    const parsed = parseBatchValues(els.data.value, els.inputMode ? els.inputMode.value : 'lines', 100);
+    const parsed = parseBatchValues(els.data.value, els.inputMode ? els.inputMode.value : 'lines', BATCH_LIMIT);
     return {
       ...parsed,
       records: parsed.values.map((value, index) => ({ value, label: value, extra: '', sourceRow: index + 1 })),
@@ -790,31 +943,30 @@
 
   async function downloadAllPng() {
     if (!currentExport) return;
-    if (!root.JSZip) {
-      setStatus('ZIP library did not load. Refresh and try again.', 'warn');
-      trackExportResult('png_zip', 'error', 'library_unavailable', currentExport.canvases.length, currentExport.layout);
-      return;
-    }
+    const exportData = currentExport;
     els.downloadAll.disabled = true;
-    setStatus(`Packaging ${currentExport.canvases.length} PNG files locally…`, 'ok');
     try {
+      await ensureLibrary('zip');
+      if (!root.JSZip) throw libraryError('ZIP');
+      setStatus(`Packaging ${exportData.canvases.length} PNG files locally…`, 'ok');
       const zip = new root.JSZip();
-      const blobs = await Promise.all(currentExport.canvases.map(canvasBlob));
+      const blobs = await Promise.all(exportData.canvases.map(canvasBlob));
       blobs.forEach((blob, index) => {
-        zip.file(`${currentExport.type}-barcode-${String(index + 1).padStart(3, '0')}.png`, blob);
+        zip.file(`${exportData.type}-barcode-${String(index + 1).padStart(3, '0')}.png`, blob);
       });
       const archive = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
       const link = document.createElement('a');
       const url = URL.createObjectURL(archive);
       link.href = url;
-      link.download = `${currentExport.type}-barcodes.zip`;
+      link.download = `${exportData.type}-barcodes.zip`;
       link.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
       setStatus(`${blobs.length} PNG files downloaded as a ZIP.`, 'ok');
-      trackExportResult('png_zip', 'success', 'none', blobs.length, currentExport.layout);
+      trackExportResult('png_zip', 'success', 'none', blobs.length, exportData.layout);
     } catch (error) {
-      setStatus(error.message || 'Could not create the PNG ZIP.', 'warn');
-      trackExportResult('png_zip', 'error', 'zip_error', currentExport.canvases.length, currentExport.layout);
+      const errorCode = error.code === 'library_unavailable' ? 'library_unavailable' : 'zip_error';
+      setStatus(errorCode === 'library_unavailable' ? 'ZIP library did not load. Check the network and try again.' : (error.message || 'Could not create the PNG ZIP.'), 'warn');
+      trackExportResult('png_zip', 'error', errorCode, exportData.canvases.length, exportData.layout);
     } finally {
       els.downloadAll.disabled = false;
     }
@@ -863,16 +1015,15 @@
     return canvas;
   }
 
-  function downloadPdf() {
+  async function downloadPdf() {
     if (!currentExport) return;
-    const Pdf = root.jspdf?.jsPDF;
-    if (!Pdf) {
-      setStatus('PDF library did not load. Refresh and try again.', 'warn');
-      trackExportResult('pdf', 'error', 'library_unavailable', currentExport.canvases.length, currentExport.layout);
-      return;
-    }
+    const exportData = currentExport;
+    els.downloadPdf.disabled = true;
     try {
-      const { layout, canvases, records, type } = currentExport;
+      await ensureLibrary('pdf');
+      const Pdf = root.jspdf?.jsPDF;
+      if (!Pdf) throw libraryError('PDF');
+      const { layout, canvases, records, type } = exportData;
       const format = layout.pageSize === 'letter' ? 'letter' : 'a4';
       const pdf = new Pdf({ unit: 'mm', format, orientation: 'portrait', compress: true });
       const pageWidth = pdf.internal.pageSize.getWidth();
@@ -911,8 +1062,11 @@
       setStatus(`${canvases.length} barcodes downloaded as PDF.`, 'ok');
       trackExportResult('pdf', 'success', 'none', canvases.length, layout);
     } catch (error) {
-      setStatus(error.message || 'Could not create the PDF.', 'warn');
-      trackExportResult('pdf', 'error', 'pdf_error', currentExport.canvases.length, currentExport.layout);
+      const errorCode = error.code === 'library_unavailable' ? 'library_unavailable' : 'pdf_error';
+      setStatus(errorCode === 'library_unavailable' ? 'PDF library did not load. Check the network and try again.' : (error.message || 'Could not create the PDF.'), 'warn');
+      trackExportResult('pdf', 'error', errorCode, exportData.canvases.length, exportData.layout);
+    } finally {
+      els.downloadPdf.disabled = false;
     }
   }
 
@@ -924,8 +1078,9 @@
     }
 
     const parsed = inputValues();
+    setHighVolumeCtaVisible(parsed.truncated);
     if (parsed.truncated) {
-      setStatus(`${parsed.total} values detected. The current limit is 100; split this into smaller batches.`, 'warn');
+      setStatus(batchLimitMessage(parsed.total), 'warn');
       if (track) {
         trackGenerateResult('error', 'batch_limit', parsed.total);
         trackEvent('limit_reached', eventContext(parsed.total, { limit_type: 'batch_count' }));
@@ -1063,6 +1218,13 @@
   els.download.addEventListener('click', downloadFirstPng);
   if (els.downloadAll) els.downloadAll.addEventListener('click', downloadAllPng);
   if (els.downloadPdf) els.downloadPdf.addEventListener('click', downloadPdf);
+  if (els.highVolumeOpen) els.highVolumeOpen.addEventListener('click', openHighVolumeForm);
+  if (els.highVolumeForm) els.highVolumeForm.addEventListener('submit', submitHighVolumeForm);
+  if (batchMode && els.data) els.data.addEventListener('input', () => {
+    const parsed = inputValues();
+    setHighVolumeCtaVisible(parsed.truncated);
+    if (parsed.truncated) setStatus(batchLimitMessage(parsed.total), 'warn');
+  });
   els.print.addEventListener('click', () => {
     const layout = currentExport?.layout || layoutSettings();
     trackEvent('print_open', eventContext(currentCount, {

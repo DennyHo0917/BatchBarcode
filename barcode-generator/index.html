@@ -8,9 +8,6 @@
     if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
       window['ga-disable-G-CTNLF8TLJ4'] = true;
     }
-    if (location.hostname === 'batchbarcode.com') {
-      location.replace(`https://www.batchbarcode.com${location.pathname}${location.search}${location.hash}`);
-    }
   </script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTNLF8TLJ4"></script>
   <script>
@@ -27,7 +24,7 @@
   <meta property="og:url" content="https://www.batchbarcode.com/barcode-generator/">
   <meta name="twitter:card" content="summary">
   <link rel="canonical" href="https://www.batchbarcode.com/barcode-generator/">
-  <link rel="stylesheet" href="/assets/barcode-tools.css?v=20260811-14">
+  <link rel="stylesheet" href="/assets/barcode-tools.css?v=20260811-15">
 </head>
 <body data-page-type="batch_barcode_generator" data-batch="true" data-layout="true">
   <header class="site-header">
@@ -42,6 +39,8 @@
       <a href="/ean-13-barcode-generator/">EAN-13</a>
       <a href="/upc-a-barcode-generator/">UPC-A</a>
       <a href="/barcode-faq/">Help &amp; FAQ</a>
+      <a href="/privacy/">Privacy</a>
+      <a href="/contact/">Contact</a>
     </nav>
   </header>
   <main class="app">
@@ -127,6 +126,56 @@ BATCH-2026-0003</textarea>
         <button id="print" type="button" disabled>Print batch</button>
       </div>
       <p class="status" id="status"></p>
+      <section id="highVolumeCta" class="high-volume-interest section" hidden aria-labelledby="highVolumeTitle">
+        <p><strong id="highVolumeTitle">Need more than 100 labels?</strong><br>Tell us about your workflow — larger batch support is being evaluated.</p>
+        <button id="highVolumeOpen" type="button">Request larger batches</button>
+        <div id="highVolumeInterest" hidden>
+          <form id="highVolumeForm">
+            <div class="high-volume-grid">
+              <div>
+                <label for="highVolumeSize">Batch size</label>
+                <select id="highVolumeSize" name="batch_size_bucket" required>
+                  <option value="">Choose one</option>
+                  <option value="101_500">101–500</option>
+                  <option value="501_5000">501–5,000</option>
+                  <option value="5001_plus">5,001+</option>
+                </select>
+              </div>
+              <div>
+                <label for="highVolumeFrequency">Frequency</label>
+                <select id="highVolumeFrequency" name="frequency" required>
+                  <option value="">Choose one</option>
+                  <option value="one_time">One time</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="daily">Daily</option>
+                </select>
+              </div>
+              <div>
+                <label for="highVolumePrinter">Printer type</label>
+                <select id="highVolumePrinter" name="printer_type" required>
+                  <option value="">Choose one</option>
+                  <option value="office_printer">Office printer</option>
+                  <option value="zebra">Zebra</option>
+                  <option value="brother">Brother</option>
+                  <option value="dymo">DYMO</option>
+                  <option value="other">Other</option>
+                  <option value="not_sure">Not sure</option>
+                </select>
+              </div>
+              <div>
+                <label for="highVolumeEmail">Optional email</label>
+                <input id="highVolumeEmail" name="email" type="email" autocomplete="email">
+              </div>
+            </div>
+            <label for="highVolumeWorkflow">What are you trying to print? (optional)</label>
+            <textarea id="highVolumeWorkflow" name="workflow" maxlength="300" rows="3"></textarea>
+            <p class="hint">No barcode data, file names or column names are sent. This static version records an anonymous interest signal only; the optional email is not sent yet.</p>
+            <button class="primary" type="submit">Submit request</button>
+            <p class="status" id="highVolumeStatus" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
 
       <details class="layout-settings section" open>
         <summary>Label layout</summary>
@@ -236,10 +285,7 @@ BATCH-2026-0003</textarea>
     </section>
   </main>
 
-  <script src="/assets/vendor/xlsx.full.min.js?v=0.20.3"></script>
-  <script src="/assets/vendor/jszip.min.js?v=3.10.1"></script>
-  <script src="/assets/vendor/jspdf.umd.min.js?v=4.2.1"></script>
   <script src="/assets/vendor/bwip-js-min.js?v=4.5.1"></script>
-  <script src="/assets/barcode-tools.js?v=20260811-15"></script>
+  <script src="/assets/barcode-tools.js?v=20260811-16"></script>
 </body>
 </html>

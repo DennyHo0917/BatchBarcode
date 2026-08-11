@@ -199,6 +199,25 @@ textarea {
   color: var(--warn);
 }
 
+.high-volume-interest > p {
+  margin: 0 0 12px;
+}
+
+.high-volume-interest form {
+  margin-top: 16px;
+}
+
+.high-volume-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.high-volume-interest textarea {
+  min-height: 76px;
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;
@@ -492,7 +511,7 @@ button:disabled {
 }
 
 .content-page {
-  width: 100vw;
+  width: 100%;
   max-width: 1040px;
   margin: 0 auto;
   padding: 38px 22px 64px;
@@ -547,6 +566,10 @@ button:disabled {
   .faq-list summary,
   .faq-list p {
     overflow-wrap: anywhere;
+  }
+
+  .high-volume-grid {
+    grid-template-columns: 1fr;
   }
 }
 

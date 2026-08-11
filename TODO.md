@@ -15,10 +15,17 @@
 - [x] 已实现批量 PNG ZIP 和直接下载 A4 / Letter PDF，并通过文件、尺寸、渲染和软件解码验收
 - [x] 已有最小 Node 回归检查；本地托管 SheetJS 0.20.3、JSZip 3.10.1 和 jsPDF 4.2.1；尚无明确部署配置，`CNAME` 指向 `www.batchbarcode.com`
 
+## 本轮优化（2026-08-11）
+
+- [x] 超过 100 条时保留原有限制提示，并提供匿名 larger-batch interest CTA；GA4 不接收 barcode value、文件名、列名、email 或自由文本
+- [x] 新增 `/privacy/` 与 `/contact/`，同步导航、sitemap、`llms.txt` 和 canonical
+- [x] Batch generator 首屏只加载 `bwip-js`；XLSX、PNG ZIP 和 PDF 依次按操作懒加载并显示失败提示
+- [x] 移除前端 non-www 跳转，保留 Cloudflare 外部重定向检查项
+
 ## P-1：先让网站被发现
 
-- [ ] 在 Search Console 确认新版 8 个 canonical 页的索引状态（阻塞：需先部署新版并等待 Google 抓取）
-- [ ] 用 URL Inspection 检查 8 个工具页并记录 Google canonical、最后抓取时间和原因（阻塞：需先部署新版并等待抓取）
+- [ ] 在 Search Console 确认新版 11 个 canonical 页的索引状态（阻塞：需先部署新版并等待 Google 抓取）
+- [ ] 用 URL Inspection 检查 11 个公开页并记录 Google canonical、最后抓取时间和原因（阻塞：需先部署新版并等待抓取）
 - [x] 确认 sitemap 已成功提交且 Google 能读取；当前线上提交记录仍是 HTTP URL 和旧版 5 页，待新版部署后改为 `https://www.batchbarcode.com/sitemap.xml`
 - [x] 导出最近 3 个月 Search Console 查询、页面、展示、点击和平均排名，作为后续基线（见 `docs/gsc-baseline-2026-08-11.csv`）
 - [x] 暂停扩展泛关键词页面；选择长尾工作流：`CSV / Excel → printable barcode label PDF`
@@ -59,8 +66,8 @@
 - [ ] 用 Rich Results Test / Schema Validator 检查已部署页面（阻塞：本地解析与 URL 校验已通过，需部署后在线验证）
 - [x] PDF417 长期主 URL 保留首页 `/`，不新增同义 `/pdf417-generator/`
 - [x] 唯一主工作流 URL 选择 `/barcode-generator/`，不增加同义 bulk/batch 路由
-- [x] sitemap 只保留 8 个 canonical、可索引、本地返回 200 的 URL，`lastmod` 已更新为 2026-08-11
-- [x] 8 个页面的 title、description、H1、正文、Open Graph 和内链已通过 `node scripts/audit-site.js`
+- [x] sitemap 只保留 11 个 canonical、可索引、本地返回 200 的 URL，`lastmod` 已更新为 2026-08-11
+- [x] 11 个页面的 title、description、H1、正文、Open Graph 和内链已通过 `node scripts/audit-site.js`
 
 ## P1：统一 Batch Barcode Generator
 
@@ -141,7 +148,7 @@
 ## 本轮验收证据（2026-08-11）
 
 - `node assets/barcode-tools.test.js`：通过。
-- `node scripts/audit-site.js`：8 个 canonical 页面通过元数据、内链和 JSON-LD 审计。
+- `node scripts/audit-site.js`：11 个 canonical 页面通过元数据、内链和 JSON-LD 审计。
 - PNG ZIP：3 个 615×265 RGBA 文件，分别解码为对应 Code 128 内容。
 - PDF417 首张 PNG：561×93 RGBA，成功解码为原始测试值。
 - 直接 PDF：1 页 A4 210×297 mm，3 张标签全部软件解码成功。

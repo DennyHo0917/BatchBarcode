@@ -1,6 +1,9 @@
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 const XLSX = require('./vendor/xlsx.full.min.js');
 const {
+  BATCH_LIMIT,
   parseBatchValues,
   parseCsv,
   looksLikeHeader,
@@ -10,7 +13,16 @@ const {
   pageCountFor,
   countBucket,
   normalizeLayoutPreferences,
+  batchLimitMessage,
+  highVolumeEventParams,
+  librarySources,
+  createLibraryLoader,
 } = require('./barcode-tools.js');
+
+const root = path.resolve(__dirname, '..');
+const generatorHtml = fs.readFileSync(path.join(root, 'barcode-generator', 'index.html'), 'utf8');
+const toolsSource = fs.readFileSync(path.join(__dirname, 'barcode-tools.js'), 'utf8');
+const cssSource = fs.readFileSync(path.join(__dirname, 'barcode-tools.css'), 'utf8');
 
 assert.deepEqual(
   parseBatchValues('A,B\n"C,D",extra\n"Q""R",extra', 'csv').values,
@@ -55,7 +67,18 @@ const tooMany = parseBatchValues(Array.from({ length: 101 }, (_, i) => `ITEM-${i
 assert.equal(tooMany.total, 101);
 assert.equal(tooMany.values.length, 100);
 assert.equal(tooMany.truncated, true);
-assert.equal(parseBatchValues(Array.from({ length: 100 }, (_, i) => `ITEM-${i}`).join('\n')).truncated, false);
+const exactlyLimit = parseBatchValues(Array.from({ length: 100 }, (_, i) => `ITEM-${i}`).join('\n'));
+assert.equal(exactlyLimit.values.length, 100);
+assert.equal(exactlyLimit.truncated, false);
+const mappedAtLimit = mapCsvRows(
+  [['id'], ...Array.from({ length: 100 }, (_, index) => [`ID-${index}`])],
+  true,
+  0,
+);
+assert.equal(mappedAtLimit.records.length, 100);
+assert.equal(mappedAtLimit.truncated, false);
+assert.equal(BATCH_LIMIT, 100);
+assert.equal(batchLimitMessage(101), '101 values detected. The current limit is 100; split this into smaller batches.');
 
 assert.equal(hasValidCheckDigit('5901234123457'), true);
 assert.equal(hasValidCheckDigit('012345678905'), true);
@@ -86,6 +109,53 @@ assert.deepEqual(normalizeLayoutPreferences({ preset: 'letter-3x3' }), {
   preset: 'letter-3x3', pageSize: 'letter', margin: 12, columns: 3, rows: 3, gap: 5, scale: 3, showText: true, textPosition: 'top',
 });
 
+const highVolumeParams = highVolumeEventParams({
+  batchSizeBucket: '101_500',
+  frequency: 'weekly',
+  printerType: 'zebra',
+  emailProvided: true,
+  pageType: 'batch_barcode_generator',
+  inputSource: 'csv_file',
+  email: 'private@example.com',
+  workflow: 'SECRET-BARCODE-VALUE',
+});
+assert.deepEqual(highVolumeParams, {
+  batch_size_bucket: '101_500',
+  frequency: 'weekly',
+  printer_type: 'zebra',
+  email_provided: 'yes',
+  page_type: 'batch_barcode_generator',
+  input_source: 'csv_file',
+});
+assert.equal(Object.keys(highVolumeParams).includes('email'), false);
+assert.equal(Object.keys(highVolumeParams).includes('workflow'), false);
+assert.equal(Object.values(highVolumeParams).includes('SECRET-BARCODE-VALUE'), false);
+
+assert.doesNotMatch(generatorHtml, /<script[^>]+vendor\/(xlsx|jszip|jspdf)/i);
+assert.match(toolsSource, /await ensureLibrary\('xlsx'\)/);
+assert.match(toolsSource, /await ensureLibrary\('zip'\)/);
+assert.match(toolsSource, /await ensureLibrary\('pdf'\)/);
+assert.match(toolsSource, /Excel library did not load\. Check the network and try again\./);
+assert.match(toolsSource, /ZIP library did not load\. Check the network and try again\./);
+assert.match(toolsSource, /PDF library did not load\. Check the network and try again\./);
+assert.deepEqual(Object.keys(librarySources).sort(), ['pdf', 'xlsx', 'zip']);
+
+for (const page of ['privacy', 'contact']) {
+  const html = fs.readFileSync(path.join(root, page, 'index.html'), 'utf8');
+  assert.match(html, new RegExp(`rel="canonical" href="https://www\\.batchbarcode\\.com/${page}/"`));
+  assert.match(html, /href="\/barcode-faq\/"/);
+  if (page === 'contact') assert.match(html, /mailto:dennyho0917@gmail\.com/);
+}
+const sitemap = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
+const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+assert.equal(sitemapUrls.length, 11);
+assert.equal(sitemapUrls.includes('https://www.batchbarcode.com/privacy/'), true);
+assert.equal(sitemapUrls.includes('https://www.batchbarcode.com/contact/'), true);
+const llms = fs.readFileSync(path.join(root, 'llms.txt'), 'utf8');
+sitemapUrls.forEach((url) => assert.equal(llms.includes(`](${url})`), true));
+assert.match(cssSource, /overflow-x:\s*hidden/);
+assert.match(cssSource, /high-volume-grid[\s\S]*grid-template-columns:\s*1fr/);
+
 const workbook = XLSX.utils.book_new();
 XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([
   ['sku', 'label', 'location'],
@@ -103,4 +173,46 @@ assert.deepEqual(worksheetRows, [
 ]);
 assert.equal(looksLikeHeader(worksheetRows), true);
 
-console.log('barcode-tools tests passed');
+async function testLazyLoader() {
+  const scripts = [];
+  const fakeDocument = {
+    head: { append: (script) => scripts.push(script) },
+    createElement: () => ({
+      listeners: {},
+      addEventListener(type, listener) { this.listeners[type] = listener; },
+    }),
+  };
+  const target = {};
+  const loader = createLibraryLoader(fakeDocument, target, {
+    xlsx: { src: '/xlsx', global: 'XLSX', label: 'Excel' },
+    zip: { src: '/zip', global: 'JSZip', label: 'ZIP' },
+    pdf: { src: '/pdf', global: 'jspdf', label: 'PDF' },
+  });
+
+  const xlsxLoad = loader('xlsx');
+  assert.equal(loader('xlsx'), xlsxLoad);
+  assert.equal(scripts.length, 1);
+  target.XLSX = {};
+  scripts[0].listeners.load();
+  await xlsxLoad;
+  assert.equal(scripts.length, 1);
+
+  const zipLoad = loader('zip');
+  assert.equal(scripts.length, 2);
+  scripts[1].listeners.error();
+  await assert.rejects(zipLoad, (error) => error.code === 'library_unavailable' && /ZIP library did not load/.test(error.message));
+  assert.equal(loader('zip'), zipLoad);
+
+  const pdfLoad = loader('pdf');
+  assert.equal(scripts.length, 3);
+  target.jspdf = {};
+  scripts[2].listeners.load();
+  await pdfLoad;
+}
+
+testLazyLoader()
+  .then(() => console.log('barcode-tools tests passed'))
+  .catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });

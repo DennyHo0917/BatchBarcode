@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BatchBarcode Privacy</title>
+  <script>
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') window['ga-disable-G-CTNLF8TLJ4'] = true;
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTNLF8TLJ4"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CTNLF8TLJ4');
+  </script>
+  <meta name="description" content="How BatchBarcode processes barcode, CSV and Excel data locally and what aggregate Google Analytics metrics are collected.">
+  <meta name="robots" content="index,follow">
+  <meta property="og:title" content="BatchBarcode Privacy">
+  <meta property="og:description" content="Local barcode generation and clear analytics boundaries for BatchBarcode.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.batchbarcode.com/privacy/">
+  <meta name="twitter:card" content="summary">
+  <link rel="canonical" href="https://www.batchbarcode.com/privacy/">
+  <link rel="stylesheet" href="/assets/barcode-tools.css?v=20260811-15">
+</head>
+<body>
+  <header class="site-header">
+    <a class="site-brand" href="/">BatchBarcode</a>
+    <nav class="site-nav" aria-label="Barcode generators">
+      <a href="/barcode-generator/">All formats</a>
+      <a href="/">PDF417</a>
+      <a href="/micro-pdf417-generator/">MicroPDF417</a>
+      <a href="/code-128-barcode-generator/">Code 128</a>
+      <a href="/qr-code-generator/">QR code</a>
+      <a href="/data-matrix-barcode-generator/">Data Matrix</a>
+      <a href="/ean-13-barcode-generator/">EAN-13</a>
+      <a href="/upc-a-barcode-generator/">UPC-A</a>
+      <a href="/barcode-faq/">Help &amp; FAQ</a>
+      <a href="/privacy/" aria-current="page">Privacy</a>
+      <a href="/contact/">Contact</a>
+    </nav>
+  </header>
+
+  <main class="content-page">
+    <header class="content-hero">
+      <h1>BatchBarcode Privacy</h1>
+      <p>BatchBarcode is designed to process barcode jobs in the browser, with only aggregate workflow metrics sent to analytics.</p>
+    </header>
+
+    <section class="faq-section" aria-labelledby="local-processing">
+      <h2 id="local-processing">Local processing</h2>
+      <ul>
+        <li>Barcode generation runs locally in your browser.</li>
+        <li>CSV and XLSX parsing runs locally in your browser.</li>
+        <li>Barcode values are not uploaded to BatchBarcode.</li>
+        <li>File names, worksheet names and mapped column names are not intentionally sent to analytics.</li>
+      </ul>
+      <p>Do not upload sensitive data as a general safety practice, but the tool does not need your source file on a server to generate labels.</p>
+    </section>
+
+    <section class="faq-section" aria-labelledby="analytics">
+      <h2 id="analytics">Aggregate analytics</h2>
+      <p>Google Analytics 4 is used for aggregate usage metrics so the workflow can be improved. Current events record low-cardinality details similar to:</p>
+      <ul>
+        <li>barcode type</li>
+        <li>input source</li>
+        <li>batch size bucket</li>
+        <li>generation success or failure</li>
+        <li>export type</li>
+        <li>print intent</li>
+      </ul>
+      <p>Free-text fields in the larger-batch interest form are not sent to GA4. The optional email is currently used only to record whether an address was provided; it is not sent or stored by this static release.</p>
+    </section>
+
+    <section class="faq-section" aria-labelledby="questions">
+      <h2 id="questions">Questions</h2>
+      <p>See the <a href="/contact/">Contact page</a> for feedback categories, or read the <a href="/barcode-faq/">barcode FAQ</a>.</p>
+    </section>
+  </main>
+</body>
+</html>

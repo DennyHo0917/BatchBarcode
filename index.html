@@ -8,9 +8,6 @@
     if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
       window['ga-disable-G-CTNLF8TLJ4'] = true;
     }
-    if (location.hostname === 'batchbarcode.com') {
-      location.replace(`https://www.batchbarcode.com${location.pathname}${location.search}${location.hash}`);
-    }
   </script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTNLF8TLJ4"></script>
@@ -108,7 +105,7 @@
       ]
     }
   </script>
-  <link rel="stylesheet" href="/assets/barcode-tools.css?v=20260811-14">
+  <link rel="stylesheet" href="/assets/barcode-tools.css?v=20260811-15">
   <style>
     :root {
       color-scheme: light;
@@ -567,6 +564,8 @@
       <a href="/ean-13-barcode-generator/">EAN-13</a>
       <a href="/upc-a-barcode-generator/">UPC-A</a>
       <a href="/barcode-faq/">Help &amp; FAQ</a>
+      <a href="/privacy/">Privacy</a>
+      <a href="/contact/">Contact</a>
     </nav>
   </header>
   <main class="app">
@@ -803,7 +802,7 @@ DOC-LOCAL-DEMO</textarea>
   </main>
 
   <script src="/assets/vendor/bwip-js-min.js?v=4.5.1"></script>
-  <script src="/assets/barcode-tools.js?v=20260811-15"></script>
+  <script src="/assets/barcode-tools.js?v=20260811-16"></script>
   <script>
     if (new URLSearchParams(location.search).get('mode') !== 'batch') {
     const els = {

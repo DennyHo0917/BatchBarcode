@@ -8,6 +8,8 @@ BatchBarcode is a static web application. Barcode rendering, spreadsheet parsing
 
 - [Batch Barcode Generator](https://www.batchbarcode.com/barcode-generator/): Generate Code 128, QR code, PDF417, MicroPDF417, EAN-13, UPC-A or Data Matrix batches from pasted rows, CSV or Excel, then export printable label sheets.
 - [Barcode Help and FAQ](https://www.batchbarcode.com/barcode-faq/): Answers about format selection, local data processing, batch limits, spreadsheet import, A4 and Letter PDFs, printing and scan failures.
+- [Privacy](https://www.batchbarcode.com/privacy/): Explains local barcode generation, local CSV/XLSX parsing and aggregate GA4 metrics.
+- [Contact](https://www.batchbarcode.com/contact/): Contact topics for product feedback, printing or scanning issues, larger batches and business collaboration.
 
 ## Barcode generators
 

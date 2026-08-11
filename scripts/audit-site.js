@@ -50,7 +50,10 @@ for (const url of urls) {
   }
   if (canonical !== url) errors.push(`Canonical mismatch in ${relative}: ${canonical || 'missing'} != ${url}`);
   if (ogUrl !== url) errors.push(`Open Graph URL mismatch in ${relative}: ${ogUrl || 'missing'} != ${url}`);
-  if (!html.includes('href="/barcode-faq/"')) errors.push(`Missing FAQ navigation link in ${relative}`);
+  for (const requiredLink of ['/barcode-faq/', '/privacy/', '/contact/']) {
+    if (!html.includes(`href="${requiredLink}"`)) errors.push(`Missing navigation link in ${relative}: ${requiredLink}`);
+  }
+  if (html.includes('location.replace')) errors.push(`Frontend canonical redirect remains in ${relative}`);
   if (relative === 'barcode-faq/index.html' && (html.match(/<details/g) || []).length < 12) {
     errors.push('FAQ hub has fewer than 12 visible questions');
   }
@@ -61,6 +64,12 @@ for (const url of urls) {
   }
   if (relative === 'barcode-generator/index.html' && !html.includes('id="singleModeLink"')) {
     errors.push('Missing single-mode return link in barcode-generator/index.html');
+  }
+  if (relative === 'barcode-generator/index.html') {
+    if (/<script[^>]+vendor\/(xlsx|jszip|jspdf)/i.test(html)) errors.push('Batch generator preloads an optional export/import library');
+    for (const id of ['highVolumeCta', 'highVolumeForm', 'highVolumeSize', 'highVolumeFrequency', 'highVolumePrinter']) {
+      if (!html.includes(`id="${id}"`)) errors.push(`Missing high-volume control in barcode-generator/index.html: ${id}`);
+    }
   }
 
   for (const link of internalLinks) {
