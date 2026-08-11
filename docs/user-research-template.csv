@@ -1,0 +1,11 @@
+participant_id,role,source_format,batch_size,printer_model,label_stock,frequency,current_alternative,failure_point,most_needed_feature,paid_trigger,session_date,completed_export_or_print,notes
+P01,,,,,,,,,,,,,
+P02,,,,,,,,,,,,,
+P03,,,,,,,,,,,,,
+P04,,,,,,,,,,,,,
+P05,,,,,,,,,,,,,
+P06,,,,,,,,,,,,,
+P07,,,,,,,,,,,,,
+P08,,,,,,,,,,,,,
+P09,,,,,,,,,,,,,
+P10,,,,,,,,,,,,,

@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Free UPC-A Barcode Generator - Validate and Download PNG</title>
+  <script>
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+      window['ga-disable-G-CTNLF8TLJ4'] = true;
+    }
+    if (location.hostname === 'batchbarcode.com') {
+      location.replace(`https://www.batchbarcode.com${location.pathname}${location.search}${location.hash}`);
+    }
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTNLF8TLJ4"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CTNLF8TLJ4');
+  </script>
+  <meta name="description" content="Free online UPC-A barcode generator for 11 or 12 digit product codes. Calculate or validate the check digit, preview, and download a PNG.">
+  <meta name="robots" content="index,follow">
+  <meta property="og:title" content="Free UPC-A Barcode Generator">
+  <meta property="og:description" content="Calculate or validate a UPC-A check digit, preview the barcode, and download a PNG locally.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.batchbarcode.com/upc-a-barcode-generator/">
+  <meta name="twitter:card" content="summary">
+  <link rel="canonical" href="https://www.batchbarcode.com/upc-a-barcode-generator/">
+  <link rel="stylesheet" href="/assets/barcode-tools.css?v=20260811-10">
+</head>
+<body data-bcid="upca" data-page-type="upca_generator">
+  <header class="site-header">
+    <a class="site-brand" href="/">BatchBarcode</a>
+    <nav class="site-nav" aria-label="Barcode generators">
+      <a href="/barcode-generator/">All formats</a>
+      <a href="/">PDF417</a>
+      <a href="/micro-pdf417-generator/">MicroPDF417</a>
+      <a href="/code-128-barcode-generator/">Code 128</a>
+      <a href="/qr-code-generator/">QR code</a>
+      <a href="/data-matrix-barcode-generator/">Data Matrix</a>
+      <a href="/ean-13-barcode-generator/">EAN-13</a>
+      <a href="/upc-a-barcode-generator/" aria-current="page">UPC-A</a>
+    </nav>
+  </header>
+  <main class="app">
+    <aside class="controls">
+      <h1>Free UPC-A Barcode Generator</h1>
+      <p class="subhead">Create a retail-style UPC-A barcode from an 11 or 12 digit product code.</p>
+
+      <label for="barcodeData">UPC-A data</label>
+      <textarea id="barcodeData" inputmode="numeric" spellcheck="false">012345678905</textarea>
+      <p class="hint">Enter 11 digits to calculate the check digit, or a complete valid 12-digit UPC-A value.</p>
+
+      <div class="section">
+        <label for="scale">Scale</label>
+        <input id="scale" type="number" min="1" max="8" value="3">
+      </div>
+
+      <div class="actions">
+        <button class="primary" id="generate" type="button">Generate</button>
+        <button id="download" type="button" disabled>Download PNG</button>
+        <button id="print" type="button" disabled>Print</button>
+      </div>
+      <p class="status" id="status"></p>
+      <p class="hint section">Generated locally. The product code is not uploaded by this static tool.</p>
+    </aside>
+
+    <section class="workspace">
+      <div class="preview-head">
+        <h2>UPC-A Preview</h2>
+        <p class="hint">A generated image does not assign or license a UPC company prefix.</p>
+      </div>
+      <div id="preview" class="preview">UPC-A preview will appear here.</div>
+
+      <section class="seo-copy">
+        <h2>UPC-A Generator with Check Digit Validation</h2>
+        <p>
+          This free UPC-A barcode generator creates a scannable retail-style barcode from numeric
+          product data. Enter 11 digits and the barcode library calculates the final check digit, or
+          enter all 12 digits and the page verifies the check digit before generating the image.
+        </p>
+
+        <h3>UPC-A input rules</h3>
+        <ul>
+          <li>Use digits only—spaces, letters, and punctuation are not valid.</li>
+          <li>Enter 11 digits when the check digit should be calculated.</li>
+          <li>Enter 12 digits when you already have the complete UPC-A value.</li>
+          <li>A mismatched 12th digit is rejected instead of creating a misleading label.</li>
+        </ul>
+
+        <h3>UPC-A numbers and product registration</h3>
+        <p>
+          This tool renders data that you provide; it does not issue, sell, or register UPC numbers.
+          If the barcode will identify a commercial product, use a number assigned for that product
+          through the appropriate standards and business process.
+        </p>
+
+        <h3>UPC-A vs EAN-13</h3>
+        <p>
+          UPC-A uses 12 digits and EAN-13 uses 13. Both are retail product barcode formats, but the
+          correct choice depends on the number already assigned to the product and the requirements of
+          the retailer or marketplace. Do not convert identifiers simply to make them fit a label.
+        </p>
+
+        <h3>Printing tips</h3>
+        <ul>
+          <li>Keep the barcode dark on a plain light background.</li>
+          <li>Do not crop the quiet zones to make the image fit.</li>
+          <li>Avoid uneven image scaling and low-resolution screenshots.</li>
+          <li>Scan a printed sample before applying labels to a product run.</li>
+        </ul>
+
+        <h3>Related tools</h3>
+        <ul class="link-list">
+          <li><a href="/ean-13-barcode-generator/">EAN-13 generator</a></li>
+          <li><a href="/barcode-generator/">Barcode generator</a></li>
+          <li><a href="/code-128-barcode-generator/">Code 128 generator</a></li>
+          <li><a href="/data-matrix-barcode-generator/">Data Matrix generator</a></li>
+        </ul>
+      </section>
+    </section>
+  </main>
+
+  <script src="/assets/vendor/bwip-js-min.js?v=4.5.1"></script>
+  <script src="/assets/barcode-tools.js?v=20260811-12"></script>
+</body>
+</html>

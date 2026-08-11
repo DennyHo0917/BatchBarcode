@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Free Online Barcode Generator - QR, Code 128, PDF417, EAN-13</title>
+  <title>Free CSV & Excel Batch Barcode Generator - Printable Labels</title>
   <script>
     if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
       window['ga-disable-G-CTNLF8TLJ4'] = true;
@@ -19,73 +19,195 @@
     gtag('js', new Date());
     gtag('config', 'G-CTNLF8TLJ4');
   </script>
-  <meta name="description" content="Free online barcode generator for Code 128, QR code, PDF417, EAN-13, and Data Matrix. Create, preview, download, and print barcode PNGs locally.">
+  <meta name="description" content="Free CSV and Excel batch barcode generator for printable labels. Map spreadsheet columns to barcode values and label text, then print A4 or Letter sheets locally.">
   <meta name="robots" content="index,follow">
+  <meta property="og:title" content="Free CSV & Excel Batch Barcode Generator">
+  <meta property="og:description" content="Import spreadsheet data, map label fields, and export printable A4 or Letter barcode-label sheets locally.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.batchbarcode.com/barcode-generator/">
+  <meta name="twitter:card" content="summary">
   <link rel="canonical" href="https://www.batchbarcode.com/barcode-generator/">
-  <link rel="stylesheet" href="/assets/barcode-tools.css">
+  <link rel="stylesheet" href="/assets/barcode-tools.css?v=20260811-10">
 </head>
-<body data-page-type="barcode_generator">
+<body data-page-type="batch_barcode_generator" data-batch="true" data-layout="true">
+  <header class="site-header">
+    <a class="site-brand" href="/">BatchBarcode</a>
+    <nav class="site-nav" aria-label="Barcode generators">
+      <a href="/barcode-generator/" aria-current="page">All formats</a>
+      <a href="/">PDF417</a>
+      <a href="/micro-pdf417-generator/">MicroPDF417</a>
+      <a href="/code-128-barcode-generator/">Code 128</a>
+      <a href="/qr-code-generator/">QR code</a>
+      <a href="/data-matrix-barcode-generator/">Data Matrix</a>
+      <a href="/ean-13-barcode-generator/">EAN-13</a>
+      <a href="/upc-a-barcode-generator/">UPC-A</a>
+    </nav>
+  </header>
   <main class="app">
     <aside class="controls">
-      <nav class="nav" aria-label="Barcode tools">
-        <a href="/">PDF417 labels</a>
-        <a href="/code-128-barcode-generator/">Code 128</a>
-        <a href="/ean-13-barcode-generator/">EAN-13</a>
-        <a href="/qr-code-generator/">QR code</a>
-      </nav>
-      <h1>Free Online Barcode Generator</h1>
-      <p class="subhead">Create common barcode formats in your browser, then download a PNG or print a test label.</p>
+      <h1>Free Batch Barcode Generator</h1>
+      <p class="subhead">Paste multiple values, choose a barcode format, and generate the batch locally.</p>
 
       <label for="barcodeType">Barcode type</label>
       <select id="barcodeType">
         <option value="code128">Code 128</option>
         <option value="qrcode">QR code</option>
         <option value="pdf417">PDF417</option>
+        <option value="micropdf417">MicroPDF417</option>
         <option value="ean13">EAN-13</option>
+        <option value="upca">UPC-A</option>
         <option value="datamatrix">Data Matrix</option>
       </select>
 
       <div class="section">
-        <label for="barcodeData">Data</label>
-        <textarea id="barcodeData" spellcheck="false">BATCH-2026-0001</textarea>
-        <p class="hint">For EAN-13, enter 12 or 13 digits. Other formats accept text, IDs, or URLs.</p>
+        <label for="inputMode">Input format</label>
+        <select id="inputMode">
+          <option value="lines">One value per line</option>
+          <option value="csv">CSV first column</option>
+        </select>
       </div>
 
       <div class="section">
-        <label for="scale">Scale</label>
+        <label for="barcodeData">Barcode data</label>
+        <textarea id="barcodeData" spellcheck="false">BATCH-2026-0001
+BATCH-2026-0002
+BATCH-2026-0003</textarea>
+        <p class="hint">Up to 100 values. EAN-13 and UPC-A batches must contain valid numeric product codes.</p>
+      </div>
+
+      <div class="section csv-import">
+        <label for="csvFile">Or upload CSV / Excel</label>
+        <input id="csvFile" type="file" accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+        <p class="hint">CSV or .xlsx, maximum 5 MB and 100 usable rows per batch. Excel uses the first worksheet. Files stay in this browser.</p>
+
+        <div id="csvMapping" class="csv-mapping" hidden>
+          <div class="mapping-head">
+            <strong id="csvFileName"></strong>
+            <button id="clearCsv" type="button">Clear file</button>
+          </div>
+          <label class="checkbox-field" for="headerRow">
+            <input id="headerRow" type="checkbox" checked>
+            First row contains column names
+          </label>
+          <div class="layout-grid">
+            <div>
+              <label for="barcodeColumn">Barcode value</label>
+              <select id="barcodeColumn"></select>
+            </div>
+            <div>
+              <label for="labelColumn">Label text</label>
+              <select id="labelColumn"></select>
+            </div>
+            <div>
+              <label for="extraColumn">Extra text</label>
+              <select id="extraColumn"></select>
+            </div>
+          </div>
+          <p class="csv-summary" id="csvSummary"></p>
+          <div class="csv-preview" id="csvPreview" aria-label="CSV data preview"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <label for="scale">Barcode scale</label>
         <input id="scale" type="number" min="1" max="8" value="3">
       </div>
 
       <div class="actions">
-        <button class="primary" id="generate" type="button">Generate</button>
-        <button id="download" type="button" disabled>Download PNG</button>
-        <button id="print" type="button" disabled>Print</button>
+        <button class="primary" id="generate" type="button">Generate batch</button>
+        <button id="download" type="button" disabled>Download first PNG</button>
+        <button id="downloadAll" type="button" disabled>Download PNG ZIP</button>
+        <button id="downloadPdf" type="button" disabled>Download PDF</button>
+        <button id="print" type="button" disabled>Print batch</button>
       </div>
       <p class="status" id="status"></p>
+
+      <details class="layout-settings section" open>
+        <summary>Label layout</summary>
+        <label for="layoutPreset">Layout preset</label>
+        <select id="layoutPreset">
+          <option value="a4-2x4">A4 · 2 columns × 4 rows</option>
+          <option value="letter-3x3">Letter · 3 columns × 3 rows</option>
+          <option value="custom">Custom</option>
+        </select>
+        <div class="layout-grid">
+          <div>
+            <label for="pageSize">Page size</label>
+            <select id="pageSize">
+              <option value="a4">A4</option>
+              <option value="letter">Letter</option>
+            </select>
+          </div>
+          <div>
+            <label for="pageMargin">Margin (mm)</label>
+            <input id="pageMargin" type="number" min="0" max="25" value="10">
+          </div>
+          <div>
+            <label for="labelColumns">Columns</label>
+            <input id="labelColumns" type="number" min="1" max="4" value="2">
+          </div>
+          <div>
+            <label for="labelRows">Rows</label>
+            <input id="labelRows" type="number" min="1" max="10" value="4">
+          </div>
+          <div>
+            <label for="labelGap">Gap (mm)</label>
+            <input id="labelGap" type="number" min="0" max="20" value="4">
+          </div>
+          <div>
+            <label for="textPosition">Text position</label>
+            <select id="textPosition">
+              <option value="bottom">Below barcode</option>
+              <option value="top">Above barcode</option>
+            </select>
+          </div>
+        </div>
+        <label class="checkbox-field" for="showText">
+          <input id="showText" type="checkbox" checked>
+          Show label text
+        </label>
+        <div class="layout-footer">
+          <p class="hint">Saved in this browser. Use Print batch → Save as PDF, and test one page first.</p>
+          <button id="resetLayout" type="button">Restore defaults</button>
+        </div>
+      </details>
+
       <p class="hint section">Generated locally. The barcode data is not uploaded by this static tool.</p>
     </aside>
 
     <section class="workspace">
       <div class="preview-head">
-        <h2>Preview</h2>
-        <p class="hint">Generate one sample and scan it before printing a batch.</p>
+        <h2>Batch preview</h2>
+        <p class="hint" id="count">No barcodes yet</p>
       </div>
-      <div id="preview" class="preview">Barcode preview will appear here.</div>
+      <div id="preview" class="preview batch-preview">Batch preview will appear here.</div>
 
       <section class="seo-copy">
-        <h2>Free Online Barcode Tool</h2>
+        <h2>Free Batch Barcode Generator</h2>
         <p>
-          Use this free online barcode generator when you need a quick PNG for labels,
-          inventory tags, documents, packaging mockups, or test scans. Choose the barcode
-          type, enter your data, and generate the image locally in the browser.
+          Use this free batch barcode generator to turn a list of IDs, URLs, or product codes
+          into multiple barcodes in one pass. Paste data or upload a CSV / Excel file, map the
+          columns, choose a format, and generate the complete preview locally in the browser.
         </p>
+        <h3>How batch input works</h3>
+        <ul>
+          <li>One value per line keeps commas and quotation marks as part of the barcode data.</li>
+          <li>CSV first column reads the first field from each row, including quoted fields.</li>
+          <li>CSV file upload detects common headers and lets you map barcode, label, and extra text columns.</li>
+          <li>Excel .xlsx upload reads the first worksheet and uses the same mapping and validation workflow.</li>
+          <li>Empty rows, duplicate values, and format-specific errors are shown before printing.</li>
+          <li>The current browser limit is 100 values per batch; larger input is never silently truncated.</li>
+          <li>If one row is invalid, the page identifies that row instead of showing a partial batch.</li>
+        </ul>
         <h3>Supported formats</h3>
         <ul>
           <li>Code 128 for compact inventory, asset, and order labels.</li>
           <li>QR code for URLs, contact text, and mobile-friendly scans.</li>
           <li>PDF417 for printable 2D labels and document workflows.</li>
+          <li>MicroPDF417 when a smaller stacked symbol fits the available data.</li>
           <li>EAN-13 for retail-style numeric product codes.</li>
-          <li>Data Matrix for compact 2D barcode tests.</li>
+          <li>UPC-A for 12-digit retail product codes.</li>
+          <li>Data Matrix for compact 2D labels and part IDs.</li>
         </ul>
         <h3>Related tools</h3>
         <ul class="link-list">
@@ -93,12 +215,18 @@
           <li><a href="/code-128-barcode-generator/">Code 128 generator</a></li>
           <li><a href="/ean-13-barcode-generator/">EAN-13 generator</a></li>
           <li><a href="/qr-code-generator/">QR code generator</a></li>
+          <li><a href="/micro-pdf417-generator/">MicroPDF417 generator</a></li>
+          <li><a href="/data-matrix-barcode-generator/">Data Matrix generator</a></li>
+          <li><a href="/upc-a-barcode-generator/">UPC-A generator</a></li>
         </ul>
       </section>
     </section>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/bwip-js@4.5.1/dist/bwip-js-min.js"></script>
-  <script src="/assets/barcode-tools.js"></script>
+  <script src="/assets/vendor/xlsx.full.min.js?v=0.20.3"></script>
+  <script src="/assets/vendor/jszip.min.js?v=3.10.1"></script>
+  <script src="/assets/vendor/jspdf.umd.min.js?v=4.2.1"></script>
+  <script src="/assets/vendor/bwip-js-min.js?v=4.5.1"></script>
+  <script src="/assets/barcode-tools.js?v=20260811-12"></script>
 </body>
 </html>

@@ -158,6 +158,55 @@
       font: 15px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      min-height: 58px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+      padding: 9px 22px;
+    }
+
+    .site-brand {
+      flex: 0 0 auto;
+      color: var(--ink);
+      font-size: 18px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .site-nav {
+      display: flex;
+      gap: 5px;
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+
+    .site-nav a {
+      flex: 0 0 auto;
+      border-radius: 6px;
+      padding: 7px 10px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .site-nav a:hover {
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    .site-nav a[aria-current="page"] {
+      background: var(--accent);
+      color: #fff;
+    }
+
     button,
     input,
     select,
@@ -176,6 +225,12 @@
       background: var(--panel);
       padding: 22px;
       overflow: auto;
+    }
+
+    .settings summary {
+      color: var(--accent-dark);
+      cursor: pointer;
+      font-weight: 650;
     }
 
     .workspace {
@@ -218,7 +273,7 @@
     }
 
     textarea {
-      min-height: 156px;
+      min-height: 132px;
       resize: vertical;
     }
 
@@ -248,10 +303,26 @@
     }
 
     .actions {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
       gap: 10px;
       margin-top: 14px;
+    }
+
+    .actions .primary {
+      width: 100%;
+      min-height: 50px;
+      font-size: 16px;
+      font-weight: 750;
+    }
+
+    .secondary-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .secondary-actions button {
+      width: 100%;
     }
 
     button {
@@ -337,21 +408,19 @@
       padding: 24px;
     }
 
-    .value-line {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 0 0 18px;
-      padding: 0;
-      list-style: none;
+    .settings {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
     }
 
-    .value-line li {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 5px 9px;
-      color: var(--muted);
-      font-size: 12px;
+    .settings[open] summary {
+      margin-bottom: 14px;
+    }
+
+    .settings .section {
+      margin-top: 12px;
+      padding-top: 12px;
     }
 
     .seo-copy {
@@ -422,6 +491,17 @@
     }
 
     @media (max-width: 820px) {
+      .site-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+        padding: 10px 14px;
+      }
+
+      .site-nav {
+        width: 100%;
+      }
+
       .app {
         grid-template-columns: 1fr;
       }
@@ -438,6 +518,7 @@
       }
 
       .controls,
+      .site-header,
       .preview-head {
         display: none;
       }
@@ -465,23 +546,42 @@
   </style>
 </head>
 <body>
+  <header class="site-header">
+    <a class="site-brand" href="/">BatchBarcode</a>
+    <nav class="site-nav" aria-label="Barcode generators">
+      <a href="/barcode-generator/">All formats</a>
+      <a href="/" aria-current="page">PDF417</a>
+      <a href="/micro-pdf417-generator/">MicroPDF417</a>
+      <a href="/code-128-barcode-generator/">Code 128</a>
+      <a href="/qr-code-generator/">QR code</a>
+      <a href="/data-matrix-barcode-generator/">Data Matrix</a>
+      <a href="/ean-13-barcode-generator/">EAN-13</a>
+      <a href="/upc-a-barcode-generator/">UPC-A</a>
+    </nav>
+  </header>
   <main class="app">
     <aside class="controls">
       <h1>Free Online PDF417 Barcode Generator</h1>
       <p class="subhead">Batch CSV data into printable, scan-safe PDF417 barcode labels. Generate locally in your browser.</p>
-      <ul class="value-line" aria-label="Key benefits">
-        <li>Batch input</li>
-        <li>Printable labels</li>
-        <li>Local processing</li>
-      </ul>
 
-      <label for="payload">Data</label>
+      <label for="payload">1. Add barcode data</label>
       <textarea id="payload" spellcheck="false">SHIP-2026-0001
 INV-AX9-4821
 DOC-LOCAL-DEMO</textarea>
       <p class="hint">Single value or batch mode: one value per line. CSV paste uses the first column.</p>
 
-      <div class="section">
+      <div class="actions">
+        <button class="primary" id="generate" type="button">2. Generate labels</button>
+        <div class="secondary-actions">
+          <button id="download" type="button" disabled>Download first PNG</button>
+          <button id="print" type="button" disabled>Print labels</button>
+        </div>
+      </div>
+      <p class="status" id="status"></p>
+
+      <details class="settings">
+        <summary>Barcode settings</summary>
+      <div>
         <label for="preset">Preset</label>
         <select id="preset">
           <option value="shipping">Shipping / inventory label</option>
@@ -521,16 +621,10 @@ DOC-LOCAL-DEMO</textarea>
         </div>
       </div>
       <p class="hint">Use 0 for auto rows/columns. Higher error level makes larger but more durable codes.</p>
-
-      <div class="actions">
-        <button class="primary" id="generate" type="button">Generate</button>
-        <button id="download" type="button" disabled>Download first PNG</button>
-        <button id="print" type="button" disabled>Print labels</button>
-      </div>
-      <p class="status" id="status"></p>
+      </details>
 
       <div class="section">
-        <p class="hint">Privacy-first: data stays in this browser. The barcode library is loaded from CDN for this local MVP.</p>
+        <p class="hint">Privacy-first: data stays in this browser. The barcode library is served locally with the site.</p>
       </div>
     </aside>
 
@@ -664,8 +758,11 @@ DOC-LOCAL-DEMO</textarea>
           Build a complete barcode workflow with a
           <a href="/barcode-generator/">barcode generator</a>,
           <a href="/code-128-barcode-generator/">Code 128 generator</a>,
-          <a href="/ean-13-barcode-generator/">EAN-13 generator</a>, and
-          <a href="/qr-code-generator/">QR code generator</a>.
+          <a href="/ean-13-barcode-generator/">EAN-13 generator</a>,
+          <a href="/qr-code-generator/">QR code generator</a>,
+          <a href="/micro-pdf417-generator/">MicroPDF417 generator</a>,
+          <a href="/data-matrix-barcode-generator/">Data Matrix generator</a>, and
+          <a href="/upc-a-barcode-generator/">UPC-A generator</a>.
         </p>
 
         <h3>FAQ</h3>
@@ -701,7 +798,8 @@ DOC-LOCAL-DEMO</textarea>
     </section>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/bwip-js@4.5.1/dist/bwip-js-min.js"></script>
+  <script src="/assets/vendor/bwip-js-min.js?v=4.5.1"></script>
+  <script src="/assets/barcode-tools.js?v=20260811-12"></script>
   <script>
     const els = {
       payload: document.querySelector('#payload'),
@@ -726,30 +824,8 @@ DOC-LOCAL-DEMO</textarea>
 
     let firstCanvas = null;
 
-    function csvFirstCell(line) {
-      const trimmed = line.trim();
-      if (!trimmed) return '';
-      if (!trimmed.startsWith('"')) return trimmed.split(',')[0].trim();
-      let out = '';
-      for (let i = 1; i < trimmed.length; i += 1) {
-        if (trimmed[i] === '"' && trimmed[i + 1] === '"') {
-          out += '"';
-          i += 1;
-        } else if (trimmed[i] === '"') {
-          break;
-        } else {
-          out += trimmed[i];
-        }
-      }
-      return out.trim();
-    }
-
     function getValues() {
-      return els.payload.value
-        .split(/\r?\n/)
-        .map(csvFirstCell)
-        .filter(Boolean)
-        .slice(0, 100);
+      return BatchBarcodeTools.parseBatchValues(els.payload.value, 'csv', 100);
     }
 
     function optionsFor(text) {
@@ -778,31 +854,58 @@ DOC-LOCAL-DEMO</textarea>
       if (typeof gtag === 'function') gtag('event', name, params);
     }
 
-    function validate(values) {
-      if (!values.length) return 'Add at least one value.';
-      const tooLong = values.find((v) => v.length > 900);
-      if (tooLong) return 'One value is very long. Keep MVP labels under 900 characters.';
-      return '';
+    function analyticsParams(count, extra = {}) {
+      return {
+        page_type: 'pdf417_batch',
+        barcode_type: 'pdf417',
+        input_source: 'text_or_csv_paste',
+        count_bucket: BatchBarcodeTools.countBucket(count),
+        barcode_count: count,
+        layout_preset: els.preset.value,
+        barcode_scale: Number(els.scale.value) || 0,
+        error_level: els.eclevel.value,
+        ...extra,
+      };
+    }
+
+    function validate(parsed) {
+      if (parsed.truncated) return { code: 'batch_limit', message: `${parsed.total} values detected. The current limit is 100; split this into smaller batches.` };
+      if (!parsed.values.length) return { code: 'empty_input', message: 'Add at least one value.' };
+      const tooLongAt = parsed.values.findIndex((value) => value.length > 900);
+      if (tooLongAt >= 0) return { code: 'value_too_long', message: `Row ${tooLongAt + 1} is too long. Keep PDF417 labels under 900 characters.` };
+
+      const scale = Number(els.scale.value);
+      const columns = Number(els.columns.value);
+      const rows = Number(els.rows.value);
+      if (!Number.isInteger(scale) || scale < 1 || scale > 8) return { code: 'invalid_scale', message: 'Scale must be a whole number from 1 to 8.' };
+      if (!Number.isInteger(columns) || columns < 0 || columns > 30) return { code: 'invalid_columns', message: 'Columns must be a whole number from 0 to 30.' };
+      if (!Number.isInteger(rows) || rows < 0 || rows > 90) return { code: 'invalid_rows', message: 'Rows must be a whole number from 0 to 90.' };
+      return null;
     }
 
     function render(track = false) {
       if (!window.bwipjs) {
         setStatus('Barcode library did not load. Check the network and refresh.', 'warn');
+        if (track) trackEvent('generate_result', analyticsParams(0, { result: 'error', error_code: 'library_unavailable' }));
         return;
       }
 
-      const values = getValues();
-      const problem = validate(values);
+      const parsed = getValues();
+      const problem = validate(parsed);
       if (problem) {
-        setStatus(problem, 'warn');
+        setStatus(problem.message, 'warn');
+        if (track) {
+          trackEvent('generate_result', analyticsParams(parsed.total, { result: 'error', error_code: problem.code }));
+          if (problem.code === 'batch_limit') trackEvent('limit_reached', analyticsParams(parsed.total, { limit_type: 'batch_count' }));
+        }
         return;
       }
 
-      els.sheet.className = 'label-sheet';
-      els.sheet.innerHTML = '';
-      firstCanvas = null;
+      const fragment = document.createDocumentFragment();
+      let nextFirstCanvas = null;
 
-      for (const value of values) {
+      for (let index = 0; index < parsed.values.length; index += 1) {
+        const value = parsed.values[index];
         const label = document.createElement('div');
         label.className = 'label';
 
@@ -813,25 +916,26 @@ DOC-LOCAL-DEMO</textarea>
 
         try {
           bwipjs.toCanvas(canvas, optionsFor(value));
-          firstCanvas ||= canvas;
+          nextFirstCanvas ||= canvas;
           label.append(canvas, payload);
-          els.sheet.append(label);
+          fragment.append(label);
         } catch (err) {
-          setStatus(err.message || 'Could not generate this barcode.', 'warn');
+          setStatus(`Row ${index + 1}: ${err.message || 'Could not generate this barcode.'}`, 'warn');
+          if (track) trackEvent('generate_result', analyticsParams(parsed.values.length, { result: 'error', error_code: 'renderer_error' }));
           return;
         }
       }
 
+      els.sheet.className = 'label-sheet';
+      els.sheet.innerHTML = '';
+      els.sheet.append(fragment);
+      firstCanvas = nextFirstCanvas;
       els.download.disabled = !firstCanvas;
       els.print.disabled = !firstCanvas;
-      els.count.textContent = `${values.length} label${values.length === 1 ? '' : 's'}`;
+      els.count.textContent = `${parsed.values.length} label${parsed.values.length === 1 ? '' : 's'}`;
       setStatus('Generated locally. Print one test label before a large batch.', 'ok');
       if (track) {
-        trackEvent('generate_barcode', {
-          barcode_type: 'pdf417',
-          label_count: values.length,
-          page_type: 'pdf417_batch',
-        });
+        trackEvent('generate_result', analyticsParams(parsed.values.length, { result: 'success', error_code: 'none' }));
       }
     }
 
@@ -846,23 +950,23 @@ DOC-LOCAL-DEMO</textarea>
 
     function downloadPng() {
       if (!firstCanvas) return;
-      trackEvent('download_barcode_png', {
-        barcode_type: 'pdf417',
-        page_type: 'pdf417_batch',
-      });
-      const a = document.createElement('a');
-      a.href = firstCanvas.toDataURL('image/png');
-      a.download = 'pdf417-barcode.png';
-      a.click();
+      const count = getValues().values.length;
+      try {
+        const a = document.createElement('a');
+        a.href = firstCanvas.toDataURL('image/png');
+        a.download = 'pdf417-barcode.png';
+        a.click();
+        trackEvent('export_result', analyticsParams(count, { result: 'success', error_code: 'none', export_type: 'first_png' }));
+      } catch (error) {
+        setStatus('Could not create the PNG.', 'warn');
+        trackEvent('export_result', analyticsParams(count, { result: 'error', error_code: 'png_error', export_type: 'first_png' }));
+      }
     }
 
     els.generate.addEventListener('click', () => render(true));
     els.download.addEventListener('click', downloadPng);
     els.print.addEventListener('click', () => {
-      trackEvent('print_barcode_labels', {
-        barcode_type: 'pdf417',
-        page_type: 'pdf417_batch',
-      });
+      trackEvent('print_open', analyticsParams(getValues().values.length));
       window.print();
     });
     els.preset.addEventListener('change', () => {

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Free Data Matrix Barcode Generator - Download PNG</title>
+  <script>
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+      window['ga-disable-G-CTNLF8TLJ4'] = true;
+    }
+    if (location.hostname === 'batchbarcode.com') {
+      location.replace(`https://www.batchbarcode.com${location.pathname}${location.search}${location.hash}`);
+    }
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTNLF8TLJ4"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CTNLF8TLJ4');
+  </script>
+  <meta name="description" content="Free online Data Matrix barcode generator for part IDs, serial numbers, asset labels, and test scans. Generate locally and download a PNG.">
+  <meta name="robots" content="index,follow">
+  <meta property="og:title" content="Free Data Matrix Barcode Generator">
+  <meta property="og:description" content="Create Data Matrix codes for part IDs, serial numbers and asset labels locally, then download a PNG.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.batchbarcode.com/data-matrix-barcode-generator/">
+  <meta name="twitter:card" content="summary">
+  <link rel="canonical" href="https://www.batchbarcode.com/data-matrix-barcode-generator/">
+  <link rel="stylesheet" href="/assets/barcode-tools.css?v=20260811-10">
+</head>
+<body data-bcid="datamatrix" data-page-type="data_matrix_generator">
+  <header class="site-header">
+    <a class="site-brand" href="/">BatchBarcode</a>
+    <nav class="site-nav" aria-label="Barcode generators">
+      <a href="/barcode-generator/">All formats</a>
+      <a href="/">PDF417</a>
+      <a href="/micro-pdf417-generator/">MicroPDF417</a>
+      <a href="/code-128-barcode-generator/">Code 128</a>
+      <a href="/qr-code-generator/">QR code</a>
+      <a href="/data-matrix-barcode-generator/" aria-current="page">Data Matrix</a>
+      <a href="/ean-13-barcode-generator/">EAN-13</a>
+      <a href="/upc-a-barcode-generator/">UPC-A</a>
+    </nav>
+  </header>
+  <main class="app">
+    <aside class="controls">
+      <h1>Free Data Matrix Barcode Generator</h1>
+      <p class="subhead">Generate a compact Data Matrix barcode for a part ID, serial number, asset label, or test scan.</p>
+
+      <label for="barcodeData">Data</label>
+      <textarea id="barcodeData" spellcheck="false">PART-AX9-2048</textarea>
+      <p class="hint">Short, stable identifiers usually produce simpler symbols that are easier to print.</p>
+
+      <div class="section">
+        <label for="scale">Scale</label>
+        <input id="scale" type="number" min="1" max="8" value="4">
+      </div>
+
+      <div class="actions">
+        <button class="primary" id="generate" type="button">Generate</button>
+        <button id="download" type="button" disabled>Download PNG</button>
+        <button id="print" type="button" disabled>Print</button>
+      </div>
+      <p class="status" id="status"></p>
+      <p class="hint section">Generated locally. Your barcode value stays in this browser.</p>
+    </aside>
+
+    <section class="workspace">
+      <div class="preview-head">
+        <h2>Data Matrix Preview</h2>
+        <p class="hint">Verify the final printed size and quiet zone with the scanner used in production.</p>
+      </div>
+      <div id="preview" class="preview">Data Matrix preview will appear here.</div>
+
+      <section class="seo-copy">
+        <h2>Data Matrix Generator for Compact 2D Labels</h2>
+        <p>
+          Use this online Data Matrix generator to encode text, a serial number, a part ID, or an
+          internal tracking value in a compact 2D barcode. Generation happens locally in the browser.
+          The resulting PNG can be downloaded for a document or printed as a test label.
+        </p>
+
+        <h3>Common Data Matrix uses</h3>
+        <ul>
+          <li>Component, part, and equipment identifiers.</li>
+          <li>Serial, lot, and internal inventory references.</li>
+          <li>Compact asset labels and document tracking marks.</li>
+          <li>Testing scanners and label layouts before a production run.</li>
+        </ul>
+
+        <h3>Data Matrix vs QR code</h3>
+        <p>
+          Both formats store data in a two-dimensional symbol. QR codes are widely recognized by
+          consumer phones and are often used for URLs. Data Matrix is commonly selected for compact
+          identification labels and established industrial workflows. Use the format required by the
+          scanner, customer, or system receiving the data.
+        </p>
+
+        <h3>How to get a reliable printed code</h3>
+        <ul>
+          <li>Keep the source value as short as the workflow allows.</li>
+          <li>Preserve a clean white margin around every side of the symbol.</li>
+          <li>Do not resize the PNG with different horizontal and vertical percentages.</li>
+          <li>Print and scan a sample using the final printer, material, and scanner.</li>
+        </ul>
+
+        <h3>Related tools</h3>
+        <ul class="link-list">
+          <li><a href="/barcode-generator/">Barcode generator</a></li>
+          <li><a href="/qr-code-generator/">QR code generator</a></li>
+          <li><a href="/code-128-barcode-generator/">Code 128 generator</a></li>
+          <li><a href="/micro-pdf417-generator/">MicroPDF417 generator</a></li>
+        </ul>
+      </section>
+    </section>
+  </main>
+
+  <script src="/assets/vendor/bwip-js-min.js?v=4.5.1"></script>
+  <script src="/assets/barcode-tools.js?v=20260811-12"></script>
+</body>
+</html>
