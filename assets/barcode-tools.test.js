@@ -113,23 +113,27 @@ const highVolumeParams = highVolumeEventParams({
   batchSizeBucket: '101_500',
   frequency: 'weekly',
   printerType: 'zebra',
-  emailProvided: true,
   pageType: 'batch_barcode_generator',
   inputSource: 'csv_file',
   email: 'private@example.com',
   workflow: 'SECRET-BARCODE-VALUE',
+  barcodeValue: 'SECRET-BARCODE-VALUE',
 });
 assert.deepEqual(highVolumeParams, {
   batch_size_bucket: '101_500',
   frequency: 'weekly',
   printer_type: 'zebra',
-  email_provided: 'yes',
   page_type: 'batch_barcode_generator',
   input_source: 'csv_file',
 });
 assert.equal(Object.keys(highVolumeParams).includes('email'), false);
+assert.equal(Object.keys(highVolumeParams).includes('email_provided'), false);
 assert.equal(Object.keys(highVolumeParams).includes('workflow'), false);
 assert.equal(Object.values(highVolumeParams).includes('SECRET-BARCODE-VALUE'), false);
+assert.equal((generatorHtml.match(/name="(?:batch_size_bucket|frequency|printer_type)"/g) || []).length, 3);
+assert.doesNotMatch(generatorHtml, /highVolumeEmail|highVolumeWorkflow|name="email"|name="workflow"/);
+assert.doesNotMatch(toolsSource, /highVolumeEmail|highVolumeWorkflow|name="email"|name="workflow"/);
+assert.match(toolsSource, /Thanks — your anonymous interest was recorded\.<br>If you want us to contact you, use the <a href="\/contact\/">Contact page<\/a>\./);
 
 assert.doesNotMatch(generatorHtml, /<script[^>]+vendor\/(xlsx|jszip|jspdf)/i);
 assert.match(toolsSource, /await ensureLibrary\('xlsx'\)/);
@@ -145,6 +149,7 @@ for (const page of ['privacy', 'contact']) {
   assert.match(html, new RegExp(`rel="canonical" href="https://www\\.batchbarcode\\.com/${page}/"`));
   assert.match(html, /href="\/barcode-faq\/"/);
   if (page === 'contact') assert.match(html, /mailto:dennyho0917@gmail\.com/);
+  if (page === 'privacy') assert.doesNotMatch(html, /optional email|free-text/i);
 }
 const sitemap = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
 const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
@@ -153,6 +158,12 @@ assert.equal(sitemapUrls.includes('https://www.batchbarcode.com/privacy/'), true
 assert.equal(sitemapUrls.includes('https://www.batchbarcode.com/contact/'), true);
 const llms = fs.readFileSync(path.join(root, 'llms.txt'), 'utf8');
 sitemapUrls.forEach((url) => assert.equal(llms.includes(`](${url})`), true));
+const ci = fs.readFileSync(path.join(root, '.github', 'workflows', 'ci.yml'), 'utf8');
+assert.match(ci, /name: BatchBarcode CI/);
+assert.match(ci, /push:/);
+assert.match(ci, /pull_request:/);
+assert.match(ci, /node assets\/barcode-tools\.test\.js/);
+assert.match(ci, /node scripts\/audit-site\.js/);
 assert.match(cssSource, /overflow-x:\s*hidden/);
 assert.match(cssSource, /high-volume-grid[\s\S]*grid-template-columns:\s*1fr/);
 
@@ -196,18 +207,50 @@ async function testLazyLoader() {
   scripts[0].listeners.load();
   await xlsxLoad;
   assert.equal(scripts.length, 1);
+  await loader('xlsx');
+  assert.equal(scripts.length, 1);
 
   const zipLoad = loader('zip');
   assert.equal(scripts.length, 2);
   scripts[1].listeners.error();
   await assert.rejects(zipLoad, (error) => error.code === 'library_unavailable' && /ZIP library did not load/.test(error.message));
-  assert.equal(loader('zip'), zipLoad);
+  const zipRetry = loader('zip');
+  assert.notEqual(zipRetry, zipLoad);
+  assert.equal(scripts.length, 3);
+  target.JSZip = {};
+  scripts[2].listeners.load();
+  await zipRetry;
+  assert.equal(scripts.length, 3);
 
   const pdfLoad = loader('pdf');
-  assert.equal(scripts.length, 3);
+  const pdfLoadAgain = loader('pdf');
+  assert.equal(pdfLoadAgain, pdfLoad);
+  assert.equal(scripts.length, 4);
   target.jspdf = {};
-  scripts[2].listeners.load();
-  await pdfLoad;
+  scripts[3].listeners.load();
+  await Promise.all([pdfLoad, pdfLoadAgain]);
+
+  const missingScripts = [];
+  const missingDocument = {
+    head: { append: (script) => missingScripts.push(script) },
+    createElement: () => ({
+      listeners: {},
+      addEventListener(type, listener) { this.listeners[type] = listener; },
+    }),
+  };
+  const missingTarget = {};
+  const missingLoader = createLibraryLoader(missingDocument, missingTarget, {
+    pdf: { src: '/missing-pdf', global: 'jspdf', label: 'PDF' },
+  });
+  const missingLoad = missingLoader('pdf');
+  missingScripts[0].listeners.load();
+  await assert.rejects(missingLoad, (error) => error.code === 'library_unavailable');
+  const recoveredLoad = missingLoader('pdf');
+  assert.notEqual(recoveredLoad, missingLoad);
+  assert.equal(missingScripts.length, 2);
+  missingTarget.jspdf = {};
+  missingScripts[1].listeners.load();
+  await recoveredLoad;
 }
 
 testLazyLoader()

@@ -14,9 +14,9 @@ The site sends only low-cardinality workflow metadata. It never sends barcode va
 | `export_result` | PNG, PNG ZIP or PDF export succeeds or fails | `result`, `error_code`, `export_type`, barcode/count/layout parameters |
 | `print_open` | The browser print dialog is opened | barcode/count/layout parameters |
 | `high_volume_interest_open` | A user opens the larger-batch request form after hitting the 100-row limit | `page_type`, `input_source` |
-| `high_volume_interest` | A user submits the larger-batch request form | `batch_size_bucket`, `frequency`, `printer_type`, `email_provided`, `page_type`, `input_source` |
+| `high_volume_interest` | A user submits the larger-batch request form | `batch_size_bucket`, `frequency`, `printer_type`, `page_type`, `input_source` |
 
-The larger-batch form is currently analytics-only. Its optional email and free-text answer are not sent to GA4 and are not uploaded by this static release; the submit handler is the narrow interface to replace if a future backend is added.
+The larger-batch form is currently analytics-only and sends only the listed low-cardinality choices; the submit handler is the narrow interface to replace if a future backend is added.
 
 `page_view` remains the automatically collected entry event. Print completion cannot be observed reliably from browser JavaScript, so the event is intentionally named `print_open`.
 
@@ -40,7 +40,6 @@ Register these event-scoped custom dimensions first:
 - `batch_size_bucket`
 - `frequency`
 - `printer_type`
-- `email_provided`
 
 Register `barcode_count` and `page_count` as event-scoped custom metrics only if numeric reporting is needed. The remaining parameters can stay unregistered until a concrete report needs them.
 

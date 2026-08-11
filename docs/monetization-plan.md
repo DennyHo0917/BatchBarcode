@@ -29,7 +29,7 @@ Do not select a pricing model until 5-10 workflow interviews and funnel data ide
 
 ## Funnel events
 
-The current implementation records page view, import/generation/export success and failure, mapping completion, limit hits, committed layout, print intent and larger-batch interest. Events include low-cardinality workflow metadata but never barcode values, label text, file names, worksheet names or source column names. The larger-batch form does not send its optional email or free text. The full schema is in `docs/analytics-plan.md`.
+The current implementation records page view, import/generation/export success and failure, mapping completion, limit hits, committed layout, print intent and larger-batch interest. Events include low-cardinality workflow metadata but never barcode values, label text, file names, worksheet names or source column names. The larger-batch form sends only anonymous selected buckets; it does not collect contact details or free text. The full schema is in `docs/analytics-plan.md`.
 
 Weekly review:
 

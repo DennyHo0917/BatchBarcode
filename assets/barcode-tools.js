@@ -69,6 +69,9 @@
         doc.head.append(script);
       });
       loads.set(src, load);
+      load.catch(() => {
+        if (loads.get(src) === load) loads.delete(src);
+      });
       return load;
     }
     return function ensureLibrary(name) {
@@ -218,7 +221,6 @@
     batchSizeBucket,
     frequency,
     printerType,
-    emailProvided,
     pageType,
     inputSource,
   }) {
@@ -226,7 +228,6 @@
       batch_size_bucket: String(batchSizeBucket || ''),
       frequency: String(frequency || ''),
       printer_type: String(printerType || ''),
-      email_provided: emailProvided ? 'yes' : 'no',
       page_type: String(pageType || 'unknown'),
       input_source: String(inputSource || 'unknown'),
     };
@@ -365,14 +366,8 @@
                   <option value="not_sure">Not sure</option>
                 </select>
               </div>
-              <div>
-                <label for="highVolumeEmail">Optional email</label>
-                <input id="highVolumeEmail" name="email" type="email" autocomplete="email">
-              </div>
             </div>
-            <label for="highVolumeWorkflow">What are you trying to print? (optional)</label>
-            <textarea id="highVolumeWorkflow" name="workflow" maxlength="300" rows="3"></textarea>
-            <p class="hint">No barcode data, file names or column names are sent. This static version records an anonymous interest signal only; the optional email is not sent yet.</p>
+            <p class="hint">No barcode data, file names or column names are sent. This static version records an anonymous interest signal only.</p>
             <button class="primary" type="submit">Submit request</button>
             <p class="status" id="highVolumeStatus" role="status" aria-live="polite"></p>
           </form>
@@ -541,18 +536,16 @@
   function submitHighVolumeForm(event) {
     event.preventDefault();
     const form = els.highVolumeForm;
-    const email = form.elements.email.value.trim();
     // ponytail: analytics-only until a backend is justified by demand.
     trackEvent('high_volume_interest', highVolumeEventParams({
       batchSizeBucket: form.elements.batch_size_bucket.value,
       frequency: form.elements.frequency.value,
       printerType: form.elements.printer_type.value,
-      emailProvided: Boolean(email),
       pageType,
       inputSource: inputSource(),
     }));
     form.reset();
-    els.highVolumeStatus.textContent = 'Thanks — your anonymous interest was recorded. No barcode data or email was sent.';
+    els.highVolumeStatus.innerHTML = 'Thanks — your anonymous interest was recorded.<br>If you want us to contact you, use the <a href="/contact/">Contact page</a>.';
     els.highVolumeStatus.className = 'status ok';
   }
 
